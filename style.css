@@ -1,0 +1,19 @@
+body{
+    background-color: black;
+    font-family: 'VT323', monospace;
+    color:white;
+}
+
+#header{
+height: 10%;    
+background-color: black;
+color: white;
+font-family: 'VT323', monospace;
+}
+
+button{
+    background-color: black;
+    border: 1px solid white;
+    font-family: 'VT323', monospace;
+    color: white;
+}
