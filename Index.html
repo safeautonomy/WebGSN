@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="./node_modules/gojs/release/go.js"></script>
-    <script src="../assets/js/goSamples.js"></script>
+    <script src="./node_modules/gojs/assets/js/goSamples.js"></script>
     <script src="/node_modules//gojs/extensions/DataInspector.js"></script>
     <script src="/App.js"></script>
     <!-- <div id="allSampleContent" class="p-4 w-full"> -->
@@ -20,9 +20,7 @@
 
 <body>
     <div id="sample">
-        <div id="header">
-            <h1>Safety Case: Safe Cooking with a Gas Stove</h1>
-        </div>
+        <div id="header"></div>
         <p><button id="zoomToFit">Zoom to Fit</button> <button id="centerRoot">Center on root</button></p>
         <div id="myDiagramDiv" style="background-color: #34343C; border: solid 1px black; height: 570px;"></div>
         <div>
@@ -30,7 +28,12 @@
             Details:<br>
             <div id="myInspector"></div>
         </div>
-
+        <div>
+            <button id="SaveButton" onclick="save()">Overwrite</button>
+            <button id="updateDataButton">Update Data</button>
+            <button onclick="load()">Load</button>
+            <!-- Diagram Model saved in JSON format: -->
+        </div>
         <p>
             This editable organizational chart sample color-codes the Nodes according to the tree level in the
             hierarchy.
@@ -69,30 +72,24 @@
             that uses a custom <a>TreeLayout</a> to position "assistants" that way.
         </p>
         <div>
-            <div>
-                <!-- <button id="SaveButton" onclick="save()">Save</button> -->
-                <!-- <button onclick="load()">Load</button> -->
-                <!-- Diagram Model saved in JSON format: -->
-            </div>
-            <textarea id="mySavedModel" style=" display:none; width:100%; height:270px;">
-{ "class": "go.TreeModel",
+
+            <textarea id="mySavedModel" style="display:none; width:100%; height:270px;">
+{ 
   "nodeDataArray": [
-{"key":1, "name":"Goal", "description":"Ensure safe cooking practices using the gas stove.", "pic":"1.jpg"},
-{"key":2, "name":"Sub-Goal-1", "description":"The gas stove's flame is controllable and extinguishable", "pic":"2.jpg", "parent":1},
-{"key":3, "name":"Sub-Goal-2", "description":"The gas stove automatically shuts off if gas leaks are detected", "pic":"3.jpg", "parent":1},
-{"key":4, "name":"Evidence-1", "description":"Video demonstration of igniting and extinguishing the flame.", "pic":"4.jpg", "parent":2},
-{"key":5, "name":"Evidence-2", "description":"User testimonials on flame control.", "pic":"5.jpg", "parent":2},
-{"key":6, "name":"Evidence-1", "description":"Gas leak sensor specifications.", "pic":"6.jpg", "parent":3},
-{"key":7, "name":"Evidence-2", "description":"User manual explaining automatic shut-off feature.", "pic":"7.jpg", "parent":3},
-{"key":8, "name":"Assumption", "description":"Users will follow safety guidelines and maintain the stove properly.", "pic":"8.jpg", "parent":0},
-{"key":9, "name":"Evidence-1", "description":"Maintenance checklist in the user manual.", "pic":"9.jpg", "parent":8},
-{"key":10, "name":"Evidence-2", "description":"Safety guidelines printed on the stove.", "pic":"10.jpg", "parent":8}
+{"key":1, "type":"Goal", "description":"Ensure safe cooking practices using the gas stove.", "pic":"1.jpg"},
+{"key":2, "type":"Sub-Goal-1", "description":"The gas stove's flame is controllable and extinguishable", "pic":"2.jpg", "parent":1},
+{"key":3, "type":"Sub-Goal-2", "description":"The gas stove automatically shuts off if gas leaks are detected", "pic":"3.jpg", "parent":1},
+{"key":4, "type":"Evidence-1", "description":"Video demonstration of igniting and extinguishing the flame.", "pic":"4.jpg", "parent":2},
+{"key":5, "type":"Evidence-2", "description":"User testimonials on flame control.", "pic":"5.jpg", "parent":2},
+{"key":6, "type":"Evidence-1", "description":"Gas leak sensor specifications.", "pic":"6.jpg", "parent":3},
+{"key":7, "type":"Evidence-2", "description":"User manual explaining automatic shut-off feature.", "pic":"7.jpg", "parent":3},
+{"key":8, "type":"Assumption", "description":"Users will follow safety guidelines and maintain the stove properly.", "pic":"8.jpg", "parent":0},
+{"key":9, "type":"Evidence-1", "description":"Maintenance checklist in the user manual.", "pic":"9.jpg", "parent":8},
+{"key":10, "type":"Evidence-2", "description":"Safety guidelines printed on the stove.", "pic":"10.jpg", "parent":8}
  ]
 }
     </textarea>
         </div>
-    </div>
-    </div>
     </div>
 </body>
 
