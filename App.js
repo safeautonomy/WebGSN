@@ -357,7 +357,19 @@ function init() {
     updateDataButton.addEventListener("click", () => {
     const modifiedJSON = document.getElementById("mySavedModel").value;
     updateDatabase(modifiedJSON);
-});
+    });
+
+    // Enable the button when you have modifiedJSON
+    function enableUpdateButton() {
+    const updateDataButton = document.getElementById("updateDataButton");
+    updateDataButton.removeAttribute("disabled");
+    };
+    function disableUpdateButton() {
+    const updateDataButton = document.getElementById("updateDataButton");
+    updateDataButton.setAttribute("disabled", "true");
+    };
+    document.getElementById('SaveButton').addEventListener('click', () => enableUpdateButton());
+    document.getElementById('updateDataButton').addEventListener('click', () => disableUpdateButton());
 
 } // end init
 
@@ -396,9 +408,8 @@ function load(data) {
     }
 };
 
-// update from edit
-
-async function updateDatabase(modifiedJSON) {
+ // update from edit
+ async function updateDatabase(modifiedJSON) {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
@@ -421,5 +432,6 @@ async function updateDatabase(modifiedJSON) {
         console.error('Error updating data:', error);
     }
 };
+
 
 window.addEventListener('DOMContentLoaded', init);
