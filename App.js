@@ -1,7 +1,17 @@
 function init() {
-
-    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
-    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    //fetch Data
+    const getSafetyCase = async() => { 
+        try{ 
+        const res = await fetch(`http://localhost:5000/safetycases`);
+        const data = await res.json();
+        header(data);
+        load(data);
+        } catch(error){
+        console.log(error)
+        }
+    };
+     getSafetyCase();
+     
     const $ = go.GraphObject.make;  // for conciseness in defining templates
 
     myDiagram =
@@ -13,8 +23,8 @@ function init() {
                 maxSelectionCount: 1, // users can select only one part at a time
                 validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
                 "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
-                    name: "(new person)",
-                    title: "",
+                    type: "(new person)",
+                    description: "",
                     comments: ""
                 },
                 "clickCreatingTool.insertPart": function (loc) {  // method override must be function, not =>
@@ -22,7 +32,7 @@ function init() {
                     if (node !== null) {
                         this.diagram.select(node);
                         this.diagram.commandHandler.scrollToPart(node);
-                        this.diagram.commandHandler.editTextBlock(node.findObject("NAMETB"));
+                        this.diagram.commandHandler.editTextBlock(node.findObject("TYPETB"));
                     }
                     return node;
                 },
@@ -45,6 +55,7 @@ function init() {
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", e => {
+        console.log("it's modified");
         const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
         const idx = document.title.indexOf("*");
@@ -84,13 +95,13 @@ function init() {
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
     function textStyle() {
-        return { font: "9pt  Segoe UI,sans-serif", stroke: "white" };
+        return { font: "12pt  'VT323', monospace", stroke: "white" };
     }
 
     // This converter is used by the Picture.
     function findHeadShot(pic) {
         if (!pic) return "images/HSnopic.png"; // There are only 16 images on the server
-        return "images/HS" + pic;
+        return pic;
     }
 
     // define the Node template
@@ -132,14 +143,14 @@ function init() {
                 }
             },
             // for sorting, have the Node.text be the data.name
-            new go.Binding("text", "name"),
+            new go.Binding("text", "type"),
             // bind the Part.layerName to control the Node's layer depending on whether it isSelected
             new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
             $(go.Panel, "Auto",
                 { name: "BODY" },
                 // define the node's outer shape
                 $(go.Shape, "Rectangle",
-                    { name: "SHAPE", fill: "#333333", stroke: 'white', strokeWidth: 3.5, portId: "" }),
+                    { name: "SHAPE", fill: "#333333", stroke: 'white', strokeWidth: 3.5, portId: "", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top }),
                 $(go.Panel, "Horizontal",
                     $(go.Picture,
                         {
@@ -158,20 +169,30 @@ function init() {
                             defaultAlignment: go.Spot.Left
                         },
                         $(go.RowColumnDefinition, { column: 2, width: 4 }),
+                        $(go.TextBlock, "Type: ", textStyle(),
+                        { row: 0, column: 0 }),
                         $(go.TextBlock, textStyle(),  // the name
                             {
-                                name: "NAMETB",
-                                row: 0, column: 0, columnSpan: 5,
-                                font: "12pt Segoe UI,sans-serif",
+                                name: "TYPETB",
+                                row: 0, column: 1, columnSpan: 5,
+                                font: "12pt 'VT323', monospace",
                                 editable: true, isMultiline: false,
-                                minSize: new go.Size(50, 16)
+                                minSize: new go.Size(50, 16),
+                                textEdited: function (textBlock, previousText, currentText) {
+                                    // Handle text changes here
+                                    const nodeData = textBlock.part.data;
+                                    if (nodeData) {
+                                        myDiagram.model.setDataProperty(nodeData, "type", currentText);
+                                        // You can update other properties as needed
+                                    }
+                                }
                             },
-                            new go.Binding("text", "name").makeTwoWay()),
+                            new go.Binding("text", "type").makeTwoWay()),
                         $(go.TextBlock, "Description: ", textStyle(),
-                            { row: 2, column: 0 }),
+                            { row: 2, column: 0}),
                         $(go.TextBlock, textStyle(),
                             {
-                                row: 2, column: 1, columnSpan: 4,
+                                row: 3, column: 0, columnSpan: 4,
                                 editable: true, isMultiline: false,
                                 minSize: new go.Size(50, 14),
                                 margin: new go.Margin(0, 0, 0, 3)
@@ -182,7 +203,7 @@ function init() {
                             new go.Binding("text", "key", v => "Hierarchy: " + v)),
                         $(go.TextBlock, textStyle(),  // the comments
                             {
-                                row: 3, column: 0, columnSpan: 5,
+                                row: 4, column: 0, columnSpan: 5,
                                 font: "italic 9pt sans-serif",
                                 wrap: go.TextBlock.WrapFit,
                                 editable: true,  // by default newlines are allowed
@@ -217,7 +238,7 @@ function init() {
         if (!node) return;
         const thisemp = node.data;
         myDiagram.startTransaction("Add Task");
-        const newemp = { name: "(new person)", title: "(title)", comments: "", parent: thisemp.key };
+        const newemp = { type: "(new person)", comments: "", parent: thisemp.key };
         myDiagram.model.addNodeData(newemp);
         const newnode = myDiagram.findNodeForData(newemp);
         if (newnode) newnode.location = node.location;
@@ -244,7 +265,7 @@ function init() {
                             const thisemp = node.data;
                             myDiagram.startTransaction("vacate");
                             // update the key, name, picture, and comments, but leave the title
-                            myDiagram.model.setDataProperty(thisemp, "name", "(Vacant)");
+                            myDiagram.model.setDataProperty(thisemp, "type", "(Vacant)");
                             myDiagram.model.setDataProperty(thisemp, "pic", "");
                             myDiagram.model.setDataProperty(thisemp, "comments", "");
                             myDiagram.commitTransaction("vacate");
@@ -292,47 +313,113 @@ function init() {
     // define the Link template
     myDiagram.linkTemplate =
         $(go.Link, go.Link.Orthogonal,
-            { layerName: "Background", corner: 5 },
-            $(go.Shape, { strokeWidth: 1.5, stroke: "#F5F5F5" }));  // the link shape
-
-    // read in the JSON-format data from the "mySavedModel" element
-    load();
+            { 
+                layerName: "Background", corner: 5,
+                routing: go.Link.AvoidsNodes,
+                curve: go.Link.JumpOver,
+                corner: 10,
+                toShortLength: 7,
+        },
+            $(go.Shape, { 
+                toArrow: "Triangle",
+                fill: "gray",
+                strokeWidth: 1.5, 
+                stroke: "#F5F5F5" }));  // the link shape
 
 
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
-        {
-            properties: {
-                "key": { readOnly: true },
-                "comments": {}
-            }
-        });
+    {
+    properties: {
+        "_id": { readOnly: true, show: false },
+        "key": { readOnly: true },
+        "type": {}, 
+        "description": {}, 
+        "comments": {},
+        "fullfill": { type: "select", choices: ["true", "false"] }
+    }}
+    );
 
+  
     // Setup zoom to fit button
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
 
     document.getElementById('centerRoot').addEventListener('click', () => {
         myDiagram.scale = 1;
         myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
+        
     });
+
+    // get modified JSON
+    const modifiedJSON = document.getElementById("mySavedModel").value;
+    // Add an event listener to the "Update Data" button
+    const updateDataButton = document.getElementById("updateDataButton");
+    updateDataButton.addEventListener("click", () => {
+    const modifiedJSON = document.getElementById("mySavedModel").value;
+    updateDatabase(modifiedJSON);
+});
+
 } // end init
 
+// show Header
+function header(data) {
+    if(!data) "Loading...."
+    else{
+        let Tittle = "Safety Case: " + data.data[0].topic;
+        document.getElementById("header").innerHTML = Tittle;
+    }
+};
 
-// Show the diagram's model in JSON format
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;
-}
-function load() {
-    myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    // make sure new data keys are unique positive integers
-    let lastkey = 1;
-    myDiagram.model.makeUniqueKeyFunction = (model, data) => {
-        let k = data.key || lastkey;
-        while (model.findNodeDataForKey(k)) k++;
-        data.key = lastkey = k;
-        return k;
-    };
-}
+};
+
+function load(data) {
+    // myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+    if (data && data.data[0].nodeDataArray) {
+        const modelData = data.data[0].nodeDataArray;
+        const treeModel = go.GraphObject.make(go.TreeModel);
+        treeModel.nodeDataArray = modelData;
+        myDiagram.model = treeModel;
+        console.log("Data loaded:", modelData);
+        // make sure new data keys are unique positive integers
+        let lastkey = 1;
+        myDiagram.model.makeUniqueKeyFunction = (model, modelData) => {
+            let k = modelData.key || lastkey;
+            while (model.findNodeDataForKey(k)) k++;
+            modelData.key = lastkey = k;
+            return k;
+        };
+    } else {
+        console.error("Data is missing or invalid.");
+    }
+};
+
+// update from edit
+
+async function updateDatabase(modifiedJSON) {
+    const modifiedData = JSON.parse(modifiedJSON);
+    delete modifiedData.class;
+    const finalModifiedJson = JSON.stringify(modifiedData);
+    console.log(finalModifiedJson);
+    try {
+        const response = await fetch('http://localhost:5000/safetycases/64e49de0884ff8008dcfc289', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: finalModifiedJson,
+        });
+
+        if (response.ok) {
+            console.log('Data updated successfully.');
+        } else {
+            console.error('Failed to update data.');
+        }
+    } catch (error) {
+        console.error('Error updating data:', error);
+    }
+};
 
 window.addEventListener('DOMContentLoaded', init);
