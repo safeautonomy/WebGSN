@@ -4,8 +4,11 @@ function init() {
         try{ 
         const res = await fetch(`http://localhost:5000/safetycases`);
         const data = await res.json();
-        header(data);
+        // header(data);
         load(data);
+        myDiagram.add(
+            $(go.Part, { location: new go.Point(500, -50) },
+              $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black" })));
         } catch(error){
         console.log(error)
         }
@@ -366,17 +369,19 @@ function init() {
     };
     document.getElementById('SaveButton').addEventListener('click', () => enableUpdateButton());
     document.getElementById('updateDataButton').addEventListener('click', () => disableUpdateButton());
+    // save as image
+    document.getElementById("blobButton").addEventListener("click", makeBlob);
 
 } // end init
 
 // show Header
-function header(data) {
-    if(!data) "Loading...."
-    else{
-        let Tittle = "Safety Case: " + data.data[0].topic;
-        document.getElementById("header").innerHTML = Tittle;
-    }
-};
+// function header(data) {
+//     if(!data) "Loading...."
+//     else{
+//         let Tittle = "Safety Case: " + data.data[0].topic;
+//         document.getElementById("header").innerHTML = Tittle;
+//     }
+// };
 
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
@@ -404,8 +409,8 @@ function load(data) {
     }
 };
 
- // update from edit
- async function updateDatabase(modifiedJSON) {
+// update from edit
+async function updateDatabase(modifiedJSON) {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
@@ -428,6 +433,33 @@ function load(data) {
         console.error('Error updating data:', error);
     }
 };
+
+function myCallback(blob) {
+    var url = window.URL.createObjectURL(blob);
+    var filename = "myBlobFile.png";
+
+    var a = document.createElement("a");
+    a.style = "display: none";
+    a.href = url;
+    a.download = filename;
+
+    // IE 11
+    if (window.navigator.msSaveBlob !== undefined) {
+      window.navigator.msSaveBlob(blob, filename);
+      return;
+    }
+
+    document.body.appendChild(a);
+    requestAnimationFrame(() => {
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    });
+  }
+
+  function makeBlob() {
+    var blob = myDiagram.makeImageData({ background: "white", returnType: "blob", callback: myCallback });
+  }
 
 
 window.addEventListener('DOMContentLoaded', init);
