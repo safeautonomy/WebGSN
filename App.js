@@ -95,7 +95,7 @@ function init() {
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
     function textStyle() {
-        return { font: "12pt  'VT323', monospace", stroke: "white" };
+        return { font: "14pt  'VT323', monospace", stroke: "black", spacingAbove: 3, spacingBelow: 3 };
     }
 
     // This converter is used by the Picture.
@@ -107,7 +107,7 @@ function init() {
     // define the Node template
     myDiagram.nodeTemplate =
         $(go.Node, "Spot",
-            {
+            {   
                 selectionObjectName: "BODY",
                 mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
                 mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
@@ -149,47 +149,40 @@ function init() {
             $(go.Panel, "Auto",
                 { name: "BODY" },
                 // define the node's outer shape
-                $(go.Shape, "Rectangle",
-                    { name: "SHAPE", fill: "#333333", stroke: 'white', strokeWidth: 3.5, portId: "", fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top }),
+                $(go.Shape, "RoundedRectangle",
+                    { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", height: 150 }),
                 $(go.Panel, "Horizontal",
                     $(go.Picture,
                         {
                             name: "Picture",
                             desiredSize: new go.Size(70, 70),
                             margin: 1.5,
-                            source: "images/HSnopic.png"  // the default image
+                            source: "images/HSnopic.png",  // the default image
                         },
                         new go.Binding("source", "pic", findHeadShot)),
                     // define the panel where the text will appear
                     $(go.Panel, "Table",
                         {
                             minSize: new go.Size(130, NaN),
-                            maxSize: new go.Size(150, NaN),
+                            maxSize: new go.Size(200, NaN),
                             margin: new go.Margin(6, 10, 0, 6),
-                            defaultAlignment: go.Spot.Left
+                            defaultAlignment: go.Spot.Left,
                         },
-                        $(go.RowColumnDefinition, { column: 2, width: 4 }),
+                        $(go.RowColumnDefinition, { column: 2, width: 4}),
                         $(go.TextBlock, "Type: ", textStyle(),
-                        { row: 0, column: 0 }),
+                        { row: 0, column: 0, margin: 5 }),
                         $(go.TextBlock, textStyle(),  // the name
                             {
                                 name: "TYPETB",
                                 row: 0, column: 1, columnSpan: 5,
-                                font: "12pt 'VT323', monospace",
+                                font: "18pt 'VT323', monospace",
                                 editable: true, isMultiline: false,
                                 minSize: new go.Size(50, 16),
-                                textEdited: function (textBlock, previousText, currentText) {
-                                    // Handle text changes here
-                                    const nodeData = textBlock.part.data;
-                                    if (nodeData) {
-                                        myDiagram.model.setDataProperty(nodeData, "type", currentText);
-                                        // You can update other properties as needed
-                                    }
-                                }
+                                margin:(0, 0, 5, 0),
                             },
                             new go.Binding("text", "type").makeTwoWay()),
                         $(go.TextBlock, "Description: ", textStyle(),
-                            { row: 2, column: 0}),
+                            { row: 2, column: 0, margin: 5 }),
                         $(go.TextBlock, textStyle(),
                             {
                                 row: 3, column: 0, columnSpan: 4,
@@ -199,15 +192,15 @@ function init() {
                             },
                             new go.Binding("text", "description").makeTwoWay()),
                         $(go.TextBlock, textStyle(),
-                            { row: 1, column: 0 },
+                            { row: 1, column: 0, margin: 5 },
                             new go.Binding("text", "key", v => "Hierarchy: " + v)),
                         $(go.TextBlock, textStyle(),  // the comments
                             {
                                 row: 4, column: 0, columnSpan: 5,
-                                font: "italic 9pt sans-serif",
+                                font: "12pt 'VT323', monospace",
                                 wrap: go.TextBlock.WrapFit,
                                 editable: true,  // by default newlines are allowed
-                                minSize: new go.Size(100, 14)
+                                minSize: new go.Size(100, 14),
                             },
                             new go.Binding("text", "comments").makeTwoWay())
                     ) // end Table Panel
@@ -313,19 +306,22 @@ function init() {
     // define the Link template
     myDiagram.linkTemplate =
         $(go.Link, go.Link.Orthogonal,
-            { 
-                layerName: "Background", corner: 5,
+            {
+                layerName: "Background",
                 routing: go.Link.AvoidsNodes,
-                curve: go.Link.JumpOver,
-                corner: 10,
+                corner: 10,  
                 toShortLength: 7,
-        },
+            },
+            
+            $(go.Shape, 
+            { 
+                strokeWidth: 5,
+            }),
             $(go.Shape, { 
-                toArrow: "Triangle",
-                fill: "gray",
-                strokeWidth: 1.5, 
-                stroke: "#F5F5F5" }));  // the link shape
-
+                toArrow: "Standard",
+                fill: "yellow",
+                strokeWidth: 3, 
+                stroke: "black" }));  // the link shape
 
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
