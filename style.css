@@ -1,7 +1,12 @@
+
 body{
     background-color: black;
     font-family: 'VT323', monospace;
     color:white;
+}
+
+strong{
+    color:rgb(162, 162, 162);
 }
 
 #header{
@@ -10,18 +15,27 @@ height: 10%;
 background-color: black;
 color: white;
 font-family: 'VT323', monospace;
+margin: 30px;
+}
+
+#buttonContainer{
+display: flex;
+justify-content: flex-end;
+margin: 20px;
 }
 
 button{
     background-color: black;
-    border: 1px solid white;
+    border: 2px solid white;
     font-family: 'VT323', monospace;
     color: white;
+    margin: 10px;
 }
 
 button:hover{
-    background-color: grey;
-    color: white;
+    background-color: lightgray;
+    color: black;
+    border: 2px solid gray;
 }
 
 button:disabled,
@@ -29,4 +43,22 @@ button[disabled]{
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
+}
+
+h2{
+    font-weight: 200;
+    animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+
+ol>li{
+    font-size:large;
+}
+a{
+    color: white;
 }
