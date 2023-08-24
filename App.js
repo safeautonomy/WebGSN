@@ -175,6 +175,7 @@ function init() {
             // define the node's outer shape
             $(go.Shape, "RoundedRectangle",
                 { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", height: 200 },
+                // fullfill change color
                 new go.Binding("fill", "fullfill", function(fullfill) {
                     return fullfill ? "lightgray" : "white";
                 })
@@ -198,11 +199,11 @@ function init() {
                     },
                     $(go.RowColumnDefinition, { column: 2, width: 4}),
                     $(go.TextBlock, "Type: ", textStyle(),
-                    { row: 0, column: 0, margin: 5 }),
+                    { row: 0, column: 0, margin: 3 }),
                     $(go.TextBlock, textStyle(),  // the name
                         {
                             name: "TYPETB",
-                            row: 0, column: 1, columnSpan: 5,
+                            row: 0, column: 1, columnSpan: 1,
                             font: "18pt 'VT323', monospace",
                             editable: true, isMultiline: false,
                             minSize: new go.Size(50, 16),
@@ -210,7 +211,7 @@ function init() {
                         },
                         new go.Binding("text", "type").makeTwoWay()),
                     $(go.TextBlock, "Description: ", textStyle(),
-                        { row: 3, column: 0, margin: 5 }),
+                        { row: 3, column: 0, margin: 3 }),
                     $(go.TextBlock, textStyle(),
                         {
                             row: 4, column: 0, columnSpan: 4,
@@ -220,10 +221,10 @@ function init() {
                         },
                         new go.Binding("text", "description").makeTwoWay()),
                     $(go.TextBlock, textStyle(),
-                        { row: 1, column: 0, margin: 5 },
+                        { row: 1, column: 0, margin: 3 },
                         new go.Binding("text", "key", v => "Hierarchy: " + v)),
                     $(go.TextBlock, textStyle(),
-                        { row: 2, column: 0, margin: 5 },
+                        { row: 2, column: 0, margin: 3 },
                         new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
                     $(go.TextBlock, textStyle(),  // the comments
                         {
