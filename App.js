@@ -6,14 +6,21 @@ function init() {
         const data = await res.json();
         // header(data);
         load(data);
+        document.getElementById("mySavedModel").value = JSON.stringify(data);
         myDiagram.add(
             $(go.Part, { location: new go.Point(500, -50) },
-              $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black" })));
+            $(go.Panel, "Table",
+            $(go.TextBlock, "Topic: ", textStyle(),
+            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 10 }),
+            $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }))));
+            new go.Binding("text", data.data[0].topic ).makeTwoWay();
         } catch(error){
         console.log(error)
         }
     };
-     getSafetyCase();
+    getSafetyCase();
+
+ 
      
     const $ = go.GraphObject.make;  // for conciseness in defining templates
 
@@ -55,6 +62,20 @@ function init() {
                         }),
                 "undoManager.isEnabled": true // enable undo & redo
             });
+
+    // Create a data object for the diagram's topic
+     const diagramData = {
+        topic: "Your Topic Here", // Initial topic value
+    };
+
+    // Set up a binding between the topic and the TextBlock
+    myDiagram.model = go.GraphObject.make(go.GraphLinksModel, {
+        nodeDataArray: [], // Your node data array
+        linkDataArray: [], // Your link data array
+    });
+
+    // Add the topic to the model
+    myDiagram.model.addNodeData(diagramData);
 
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", e => {
@@ -263,7 +284,7 @@ function init() {
                             // update the key, name, picture, and comments, but leave the title
                             myDiagram.model.setDataProperty(thisemp, "type", "(Vacant)");
                             myDiagram.model.setDataProperty(thisemp, "pic", "");
-                            myDiagram.model.setDataProperty(thisemp, "comments", "");
+                            myDiagram.model.setDataProperty(thisemp, "comments", ""); 
                             myDiagram.commitTransaction("vacate");
                         }
                     }
@@ -329,7 +350,7 @@ function init() {
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
     {
-    properties: {
+        properties: {
         "_id": { readOnly: true, show: false },
         "key": { readOnly: true },
         "type": {}, 
@@ -369,19 +390,28 @@ function init() {
     };
     document.getElementById('SaveButton').addEventListener('click', () => enableUpdateButton());
     document.getElementById('updateDataButton').addEventListener('click', () => disableUpdateButton());
+    // update topic
+    document.getElementById('updateTopic').addEventListener('click', () =>{
+        const topicInput = document.getElementById('topicInput').value;
+        updateTopic(topicInput);
+    });
+    document.getElementById('topicInput').addEventListener('input', function () {
+        const topicInputValue = document.getElementById('topicInput').value;
+        const updateTopicButton = document.getElementById('updateTopic');
+        // Check if the input value is not empty and enable/disable the button accordingly
+        if (topicInputValue !== '') {
+            updateTopicButton.removeAttribute('disabled');
+        } else {
+            updateTopicButton.setAttribute('disabled', 'true');
+        }
+    });
     // save as image
     document.getElementById("blobButton").addEventListener("click", makeBlob);
 
+    // save as JSON
+    document.getElementById("downloadJsonButton").addEventListener("click", downloadJson);
+   
 } // end init
-
-// show Header
-// function header(data) {
-//     if(!data) "Loading...."
-//     else{
-//         let Tittle = "Safety Case: " + data.data[0].topic;
-//         document.getElementById("header").innerHTML = Tittle;
-//     }
-// };
 
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
@@ -434,21 +464,19 @@ async function updateDatabase(modifiedJSON) {
     }
 };
 
+// save image
 function myCallback(blob) {
-    var url = window.URL.createObjectURL(blob);
-    var filename = "myBlobFile.png";
-
-    var a = document.createElement("a");
+    let url = window.URL.createObjectURL(blob);
+    let filename = "myBlobFile.png";
+    let a = document.createElement("a");
     a.style = "display: none";
     a.href = url;
     a.download = filename;
-
     // IE 11
     if (window.navigator.msSaveBlob !== undefined) {
       window.navigator.msSaveBlob(blob, filename);
       return;
     }
-
     document.body.appendChild(a);
     requestAnimationFrame(() => {
       a.click();
@@ -456,10 +484,52 @@ function myCallback(blob) {
       document.body.removeChild(a);
     });
   }
-
   function makeBlob() {
     var blob = myDiagram.makeImageData({ background: "white", returnType: "blob", callback: myCallback });
-  }
+  };
+
+  //save JSON
+  function downloadJson() {
+    // Get the JSON data from the mySavedModel textarea
+    const jsonData = document.getElementById("mySavedModel").value;
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([jsonData], { type: "application/json" });
+
+    // Create a temporary link to trigger the download
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "mySavedModel.json";
+
+    // Trigger the click event on the link to start the download
+    a.click();
+
+    // Clean up by revoking the object URL
+    URL.revokeObjectURL(a.href);
+};
+
+  // update topic
+  async function updateTopic(newTopic) {
+    try {
+        // Define the data to be sent in the request body
+        const data = { topic: newTopic };
+        const response = await fetch('http://localhost:5000/safetycases/64e49de0884ff8008dcfc289', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            console.log('Topic updated successfully in the database.');
+            location.reload();
+        } else {
+            console.error('Failed to update the topic in the database.');
+        };
+    } catch (error) {
+        console.error('Error updating the topic in the database:', error);
+    };
+};
 
 
 window.addEventListener('DOMContentLoaded', init);
