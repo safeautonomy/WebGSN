@@ -11,7 +11,7 @@ function init() {
             $(go.Part, { location: new go.Point(500, -50) },
             $(go.Panel, "Table",
             $(go.TextBlock, "Topic: ", textStyle(),
-            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 10 }),
+            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 3 }),
             $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }))));
             new go.Binding("text", data.data[0].topic ).makeTwoWay();
         } catch(error){
@@ -130,126 +130,133 @@ function init() {
 
     // define the Node template
     myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-            {   
-                selectionObjectName: "BODY",
-                mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
-                mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
-                // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-                mouseDragEnter: (e, node, prev) => {
-                    const diagram = node.diagram;
-                    const selnode = diagram.selection.first();
-                    if (!mayWorkFor(selnode, node)) return;
-                    const shape = node.findObject("SHAPE");
-                    if (shape) {
-                        shape._prevFill = shape.fill;  // remember the original brush
-                        shape.fill = "darkred";
-                    }
-                },
-                mouseDragLeave: (e, node, next) => {
-                    const shape = node.findObject("SHAPE");
-                    if (shape && shape._prevFill) {
-                        shape.fill = shape._prevFill;  // restore the original brush
-                    }
-                },
-                mouseDrop: (e, node) => {
-                    const diagram = node.diagram;
-                    const selnode = diagram.selection.first();  // assume just one Node in selection
-                    if (mayWorkFor(selnode, node)) {
-                        // find any existing link into the selected node
-                        const link = selnode.findTreeParentLink();
-                        if (link !== null) {  // reconnect any existing link
-                            link.fromNode = node;
-                        } else {  // else create a new link
-                            diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
-                        }
-                    }
+    $(go.Node, "Spot",
+        {   
+            selectionObjectName: "BODY",
+            mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
+            mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
+            // handle dragging a Node onto a Node to (maybe) change the reporting relationship
+            mouseDragEnter: (e, node, prev) => {
+                const diagram = node.diagram;
+                const selnode = diagram.selection.first();
+                if (!mayWorkFor(selnode, node)) return;
+                const shape = node.findObject("SHAPE");
+                if (shape) {
+                    shape._prevFill = shape.fill;  // remember the original brush
+                    shape.fill = "darkred";
                 }
             },
-            // for sorting, have the Node.text be the data.name
-            new go.Binding("text", "type"),
-            // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-            new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
-            $(go.Panel, "Auto",
-                { name: "BODY" },
-                // define the node's outer shape
-                $(go.Shape, "RoundedRectangle",
-                    { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", height: 150 }),
-                $(go.Panel, "Horizontal",
-                    $(go.Picture,
+            mouseDragLeave: (e, node, next) => {
+                const shape = node.findObject("SHAPE");
+                if (shape && shape._prevFill) {
+                    shape.fill = shape._prevFill;  // restore the original brush
+                }
+            },
+            mouseDrop: (e, node) => {
+                const diagram = node.diagram;
+                const selnode = diagram.selection.first();  // assume just one Node in selection
+                if (mayWorkFor(selnode, node)) {
+                    // find any existing link into the selected node
+                    const link = selnode.findTreeParentLink();
+                    if (link !== null) {  // reconnect any existing link
+                        link.fromNode = node;
+                    } else {  // else create a new link
+                        diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
+                    }
+                }
+            }
+        },
+        // for sorting, have the Node.text be the data.name
+        new go.Binding("text", "type"),
+        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+        new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
+        $(go.Panel, "Auto",
+            { name: "BODY" },
+            // define the node's outer shape
+            $(go.Shape, "RoundedRectangle",
+                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", height: 200 },
+                new go.Binding("fill", "fullfill", function(fullfill) {
+                    return fullfill ? "lightgray" : "white";
+                })
+                ),  
+            $(go.Panel, "Horizontal",
+                $(go.Picture,
+                    {
+                        name: "Picture",
+                        desiredSize: new go.Size(70, 70),
+                        margin: 1.5,
+                        source: "images/HSnopic.png",  // the default image
+                    },
+                    new go.Binding("source", "pic", findHeadShot)),
+                // define the panel where the text will appear
+                $(go.Panel, "Table",
+                    {
+                        minSize: new go.Size(130, NaN),
+                        maxSize: new go.Size(200, NaN),
+                        margin: new go.Margin(6, 10, 0, 6),
+                        defaultAlignment: go.Spot.Left,
+                    },
+                    $(go.RowColumnDefinition, { column: 2, width: 4}),
+                    $(go.TextBlock, "Type: ", textStyle(),
+                    { row: 0, column: 0, margin: 5 }),
+                    $(go.TextBlock, textStyle(),  // the name
                         {
-                            name: "Picture",
-                            desiredSize: new go.Size(70, 70),
-                            margin: 1.5,
-                            source: "images/HSnopic.png",  // the default image
+                            name: "TYPETB",
+                            row: 0, column: 1, columnSpan: 5,
+                            font: "18pt 'VT323', monospace",
+                            editable: true, isMultiline: false,
+                            minSize: new go.Size(50, 16),
+                            margin:(0, 0, 5, 0),
                         },
-                        new go.Binding("source", "pic", findHeadShot)),
-                    // define the panel where the text will appear
-                    $(go.Panel, "Table",
+                        new go.Binding("text", "type").makeTwoWay()),
+                    $(go.TextBlock, "Description: ", textStyle(),
+                        { row: 3, column: 0, margin: 5 }),
+                    $(go.TextBlock, textStyle(),
                         {
-                            minSize: new go.Size(130, NaN),
-                            maxSize: new go.Size(200, NaN),
-                            margin: new go.Margin(6, 10, 0, 6),
-                            defaultAlignment: go.Spot.Left,
+                            row: 4, column: 0, columnSpan: 4,
+                            editable: true, isMultiline: false,
+                            minSize: new go.Size(50, 14),
+                            margin: new go.Margin(0, 0, 0, 3)
                         },
-                        $(go.RowColumnDefinition, { column: 2, width: 4}),
-                        $(go.TextBlock, "Type: ", textStyle(),
-                        { row: 0, column: 0, margin: 5 }),
-                        $(go.TextBlock, textStyle(),  // the name
-                            {
-                                name: "TYPETB",
-                                row: 0, column: 1, columnSpan: 5,
-                                font: "18pt 'VT323', monospace",
-                                editable: true, isMultiline: false,
-                                minSize: new go.Size(50, 16),
-                                margin:(0, 0, 5, 0),
-                            },
-                            new go.Binding("text", "type").makeTwoWay()),
-                        $(go.TextBlock, "Description: ", textStyle(),
-                            { row: 2, column: 0, margin: 5 }),
-                        $(go.TextBlock, textStyle(),
-                            {
-                                row: 3, column: 0, columnSpan: 4,
-                                editable: true, isMultiline: false,
-                                minSize: new go.Size(50, 14),
-                                margin: new go.Margin(0, 0, 0, 3)
-                            },
-                            new go.Binding("text", "description").makeTwoWay()),
-                        $(go.TextBlock, textStyle(),
-                            { row: 1, column: 0, margin: 5 },
-                            new go.Binding("text", "key", v => "Hierarchy: " + v)),
-                        $(go.TextBlock, textStyle(),  // the comments
-                            {
-                                row: 4, column: 0, columnSpan: 5,
-                                font: "12pt 'VT323', monospace",
-                                wrap: go.TextBlock.WrapFit,
-                                editable: true,  // by default newlines are allowed
-                                minSize: new go.Size(100, 14),
-                            },
-                            new go.Binding("text", "comments").makeTwoWay())
-                    ) // end Table Panel
-                ) // end Horizontal Panel
-            ), // end Auto Panel
-            $("Button",
-                $(go.Shape, "PlusLine", { width: 10, height: 10 }),
-                {
-                    name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
-                    click: (e, button) => addEmployee(button.part)
-                },
-                // button is visible either when node is selected or on mouse-over
-                new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-            ),
-            new go.Binding("isTreeExpanded").makeTwoWay(),
-            $("TreeExpanderButton",
-                {
-                    name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
-                    "_treeExpandedFigure": "TriangleUp",
-                    "_treeCollapsedFigure": "TriangleDown"
-                },
-                // button is visible either when node is selected or on mouse-over
-                new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-            )
-        );  // end Node, a Spot Panel
+                        new go.Binding("text", "description").makeTwoWay()),
+                    $(go.TextBlock, textStyle(),
+                        { row: 1, column: 0, margin: 5 },
+                        new go.Binding("text", "key", v => "Hierarchy: " + v)),
+                    $(go.TextBlock, textStyle(),
+                        { row: 2, column: 0, margin: 5 },
+                        new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
+                    $(go.TextBlock, textStyle(),  // the comments
+                        {
+                            row: 4, column: 0, columnSpan: 5,
+                            font: "12pt 'VT323', monospace",
+                            wrap: go.TextBlock.WrapFit,
+                            editable: true,  // by default newlines are allowed
+                            minSize: new go.Size(100, 14),
+                        },
+                        new go.Binding("text", "comments").makeTwoWay())
+                ) // end Table Panel
+            ) // end Horizontal Panel
+        ), // end Auto Panel
+        $("Button",
+            $(go.Shape, "PlusLine", { width: 10, height: 10 }),
+            {
+                name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
+                click: (e, button) => addEmployee(button.part)
+            },
+            // button is visible either when node is selected or on mouse-over
+            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+        ),
+        new go.Binding("isTreeExpanded").makeTwoWay(),
+        $("TreeExpanderButton",
+            {
+                name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
+                "_treeExpandedFigure": "TriangleUp",
+                "_treeCollapsedFigure": "TriangleDown"
+            },
+            // button is visible either when node is selected or on mouse-over
+            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+        )
+    );  // end Node, a Spot Panel
 
     function addEmployee(node) {
         if (!node) return;
@@ -533,3 +540,4 @@ function myCallback(blob) {
 
 
 window.addEventListener('DOMContentLoaded', init);
+
