@@ -23,15 +23,19 @@
         <div id="header">
             <p>Safety Case Template</p>
         </div>
-        <div id="buttonContainer">
-            <button id="zoomToFit">Zoom to Fit</button>
-            <button id="centerRoot">Center on root</button>
-            <button id="blobButton">Download!</button>
+        <div id="topContainer">
+            <div id="buttonContainer">
+                <button id="zoomToFit">Zoom to Fit</button>
+                <button id="centerRoot">Center on root</button>
+                <button id="blobButton">Download Image</button>
+                <button id="downloadJsonButton">Download JSON</button>
+            </div>
+            <div id="topicEditor">
+                <input id="topicInput" placeholder="Enter a new topic">
+                <button id="updateTopic" disabled>Change Topic</button>
+            </div>
         </div>
         <div id="myDiagramDiv" style="background-color: gray; border: solid 1px black; height: 570px;"></div>
-
-
-
         <div>
             <h2>It's a template, Please edit the Diagram manually</h2><br>
             Details:<br>
@@ -39,7 +43,7 @@
         </div>
         <div>
             <button id="SaveButton" onclick="save()">Enter</button>
-            <button id="updateDataButton" disabled>Update Data</button>
+            <button id="updateDataButton" disabled>Save Changes</button>
             <!-- <button onclick="load()">Load</button> -->
             <!-- Diagram Model saved in JSON format: -->
         </div>
@@ -48,32 +52,20 @@
             <li>By clicking <strong>▲</strong> to collapse the diagram.</li>
             <li>By clicking <strong>▼</strong> to expand the diagram.</li>
             <li>By clicking <strong>+</strong> to add an new figure below.</li>
+            <li>Parent referance the nuber of <strong>Hierarchy</strong> which is the one above your current figure.
+            </li>
             <li>Right click to <strong>add</strong> or <strong>delete</strong> a figure</li>
-            <li>By clicking <strong>Enter</strong> to send the changes which has been made.</li>
-            <li>By clicking <strong>Update data</strong>, so you won't lose the changes.</li>
-            <li>Adejest where those figures are located by <strong>Dragging</strong> it</li>
+            <li>By clicking <strong>Enter</strong> to send the changes to diagram which has been made.</li>
+            <li>By clicking <strong>Save Changes</strong>, so you won't lose the changes.</li>
+            <li>Adejest where should those figures locate by <strong>Dragging</strong> it</li>
             <li>Press <strong>Zoom to Fit</strong> or <strong>Center on root</strong>, to includes the whole diagram in
                 image.</li>
-            <li>Please click <strong>Download</strong> to download the image</li>
+            <li>Please click <strong>Download Image</strong> to download the image</li>
+            <li>Please click <strong>Download JSON</strong> to download the JSON file</li>
         </ol>
         <div>
 
-            <textarea id="mySavedModel" style="display:none; width:100%; height:270px;">
-{ 
-  "nodeDataArray": [
-{"key":1, "type":"Goal", "description":"Ensure safe cooking practices using the gas stove.", "pic":"1.jpg"},
-{"key":2, "type":"Sub-Goal-1", "description":"The gas stove's flame is controllable and extinguishable", "pic":"2.jpg", "parent":1},
-{"key":3, "type":"Sub-Goal-2", "description":"The gas stove automatically shuts off if gas leaks are detected", "pic":"3.jpg", "parent":1},
-{"key":4, "type":"Evidence-1", "description":"Video demonstration of igniting and extinguishing the flame.", "pic":"4.jpg", "parent":2},
-{"key":5, "type":"Evidence-2", "description":"User testimonials on flame control.", "pic":"5.jpg", "parent":2},
-{"key":6, "type":"Evidence-1", "description":"Gas leak sensor specifications.", "pic":"6.jpg", "parent":3},
-{"key":7, "type":"Evidence-2", "description":"User manual explaining automatic shut-off feature.", "pic":"7.jpg", "parent":3},
-{"key":8, "type":"Assumption", "description":"Users will follow safety guidelines and maintain the stove properly.", "pic":"8.jpg", "parent":0},
-{"key":9, "type":"Evidence-1", "description":"Maintenance checklist in the user manual.", "pic":"9.jpg", "parent":8},
-{"key":10, "type":"Evidence-2", "description":"Safety guidelines printed on the stove.", "pic":"10.jpg", "parent":8}
- ]
-}
-    </textarea>
+            <textarea id="mySavedModel" style=" display: none; width:100%; height:270px;"></textarea>
         </div>
     </div>
 </body>
