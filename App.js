@@ -461,9 +461,9 @@ async function updateDatabase(modifiedJSON) {
             },
             body: finalModifiedJson,
         });
-
         if (response.ok) {
             console.log('Data updated successfully.');
+            location.reload();
         } else {
             console.error('Failed to update data.');
         }
