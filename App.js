@@ -1,29 +1,12 @@
 function init() {
-    //fetch Data
-    const getSafetyCase = async() => { 
-        try{ 
-        const res = await fetch(`http://localhost:5000/safetycases`);
-        const data = await res.json();
-        // header(data);
-        load(data);
-        document.getElementById("mySavedModel").value = JSON.stringify(data);
-        myDiagram.add(
-            $(go.Part, { location: new go.Point(500, -50) },
-            $(go.Panel, "Table",
-            $(go.TextBlock, "Topic: ", textStyle(),
-            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 3 }),
-            $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }))));
-            new go.Binding("text", data.data[0].topic ).makeTwoWay();
-        } catch(error){
-        console.log(error)
-        }
-    };
-    getSafetyCase();
-
- 
+    // Check if this is the first page load
+    if (sessionStorage.getItem('firstLoad') === null) {
+        // Set a flag in sessionStorage to indicate that the page has loaded once
+        sessionStorage.setItem('firstLoad', '1');
+        window.location.reload();
+    } 
      
     const $ = go.GraphObject.make;  // for conciseness in defining templates
-
     myDiagram =
         new go.Diagram("myDiagramDiv", // must be the ID or reference to div
             {
@@ -57,29 +40,46 @@ function init() {
                             // properties for the "last parents":
                             alternateAngle: 90,
                             alternateLayerSpacing: 35,
-                            alternateAlignment: go.TreeLayout.AlignmentBus,
-                            alternateNodeSpacing: 20
+                            // alternateAlignment: go.TreeLayout.AlignmentBus,
+                            alternateNodeSpacing: 100,
+                            setsPortSpot: false,
+                            setsChildPortSpot: false
                         }),
                 "undoManager.isEnabled": true // enable undo & redo
             });
-
+     //fetch Data
+     const getSafetyCase = async() => { 
+        try{ 
+        const res = await fetch(`http://localhost:5000/safetycases`);
+        const data = await res.json();
+        load(data);
+        document.getElementById("mySavedModel").value = JSON.stringify(data);
+        myDiagram.add(
+            $(go.Part, { location: new go.Point(500, -50) },
+            $(go.Panel, "Table",
+            $(go.TextBlock, "Topic: ", textStyle(),
+            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 3 }),
+            $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }))));
+            new go.Binding("text", data.data[0].topic ).makeTwoWay();
+        } catch(error){
+        console.log(error)
+        }
+    };
+    getSafetyCase();
     // Create a data object for the diagram's topic
      const diagramData = {
         topic: "Your Topic Here", // Initial topic value
     };
-
     // Set up a binding between the topic and the TextBlock
     myDiagram.model = go.GraphObject.make(go.GraphLinksModel, {
         nodeDataArray: [], // Your node data array
         linkDataArray: [], // Your link data array
     });
-
     // Add the topic to the model
     myDiagram.model.addNodeData(diagramData);
-
     // when the document is modified, add a "*" to the title and enable the "Save" button
     myDiagram.addDiagramListener("Modified", e => {
-        console.log("it's modified");
+        // console.log("it's modified");
         const button = document.getElementById("SaveButton");
         if (button) button.disabled = !myDiagram.isModified;
         const idx = document.title.indexOf("*");
@@ -90,8 +90,8 @@ function init() {
         }
     });
 
-    const levelColors = ["#AC193D", "#2672EC", "#8C0095", "#5133AB",
-        "#008299", "#D24726", "#008A00", "#094AB2"];
+    const levelColors = ["#c40a0a", "#62d1c0", "#f0a732", "#136eab", "#d647d4", "#a1d966", "#7f56e8",
+         "#b16eff"];
 
     // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
     myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
@@ -115,7 +115,6 @@ function init() {
         if (node2.isInTreeOf(node1)) return false;  // cannot work for someone who works for you
         return true;
     }
-
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
     function textStyle() {
@@ -188,7 +187,7 @@ function init() {
                         margin: 1.5,
                         source: "images/HSnopic.png",  // the default image
                     },
-                    new go.Binding("source", "pic", findHeadShot)),
+                    new go.Binding("source", "pic")),
                 // define the panel where the text will appear
                 $(go.Panel, "Table",
                     {
@@ -343,8 +342,9 @@ function init() {
                 routing: go.Link.AvoidsNodes,
                 corner: 10,  
                 toShortLength: 7,
+                fromSpot: go.Spot.Bottom, 
+                toSpot: go.Spot.Top
             },
-            
             $(go.Shape, 
             { 
                 strokeWidth: 5,
@@ -367,7 +367,6 @@ function init() {
         "fullfill": { type: "select", choices: ["true", "false"] }
     }}
     );
-
   
     // Setup zoom to fit button
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
@@ -377,7 +376,6 @@ function init() {
         myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
         
     });
-
     // get modified JSON
     const modifiedJSON = document.getElementById("mySavedModel").value;
     // Add an event listener to the "Update Data" button
@@ -386,7 +384,6 @@ function init() {
     const modifiedJSON = document.getElementById("mySavedModel").value;
     updateDatabase(modifiedJSON);
     });
-
     // Enable the button when you have modifiedJSON
     function enableUpdateButton() {
     const updateDataButton = document.getElementById("updateDataButton");
@@ -415,10 +412,9 @@ function init() {
     });
     // save as image
     document.getElementById("blobButton").addEventListener("click", makeBlob);
-
     // save as JSON
     document.getElementById("downloadJsonButton").addEventListener("click", downloadJson);
-   
+ 
 } // end init
 
 function save() {
@@ -433,7 +429,7 @@ function load(data) {
         const treeModel = go.GraphObject.make(go.TreeModel);
         treeModel.nodeDataArray = modelData;
         myDiagram.model = treeModel;
-        console.log("Data loaded:", modelData);
+        // console.log("Data loaded:", modelData);
         // make sure new data keys are unique positive integers
         let lastkey = 1;
         myDiagram.model.makeUniqueKeyFunction = (model, modelData) => {
@@ -500,18 +496,14 @@ function myCallback(blob) {
   function downloadJson() {
     // Get the JSON data from the mySavedModel textarea
     const jsonData = document.getElementById("mySavedModel").value;
-
     // Create a Blob with the JSON data
     const blob = new Blob([jsonData], { type: "application/json" });
-
     // Create a temporary link to trigger the download
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "mySavedModel.json";
-
     // Trigger the click event on the link to start the download
     a.click();
-
     // Clean up by revoking the object URL
     URL.revokeObjectURL(a.href);
 };
@@ -540,5 +532,5 @@ function myCallback(blob) {
 };
 
 
-window.addEventListener('DOMContentLoaded', init);
 
+window.addEventListener('DOMContentLoaded', init);

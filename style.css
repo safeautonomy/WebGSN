@@ -11,11 +11,15 @@ strong{
 
 #header{
 font-size: xx-large;
-height: 10%;    
+/* height: 5%;     */
 background-color: black;
 color: white;
 font-family: 'VT323', monospace;
-margin: 30px;
+margin: 20px;
+}
+
+P{
+    margin: 0;
 }
 
 #topContainer{
@@ -27,7 +31,6 @@ margin: 30px;
 
 #topicEditor{
     margin: 20px;
-
 }
 
 #buttonContainer{
