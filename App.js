@@ -5,7 +5,6 @@ function init() {
         sessionStorage.setItem('firstLoad', '1');
         window.location.reload();
     } 
-     
     const $ = go.GraphObject.make;  // for conciseness in defining templates
     myDiagram =
         new go.Diagram("myDiagramDiv", // must be the ID or reference to div
@@ -122,10 +121,10 @@ function init() {
     }
 
     // This converter is used by the Picture.
-    function findHeadShot(pic) {
-        if (!pic) return "images/HSnopic.png"; // There are only 16 images on the server
-        return pic;
-    }
+    // function findHeadShot(pic) {
+    //     if (!pic) return "images/HSnopic.png"; // There are only 16 images on the server
+    //     return "images/HS" + pic;
+    // }
 
     // define the Node template
     myDiagram.nodeTemplate =
@@ -180,14 +179,14 @@ function init() {
                 })
                 ),  
             $(go.Panel, "Horizontal",
-                $(go.Picture,
-                    {
-                        name: "Picture",
-                        desiredSize: new go.Size(70, 70),
-                        margin: 1.5,
-                        source: "images/HSnopic.png",  // the default image
-                    },
-                    new go.Binding("source", "pic")),
+                // $(go.Picture,
+                //     {
+                //         name: "Picture",
+                //         desiredSize: new go.Size(70, 70),
+                //         margin: 1.5,
+                //         source: "images/HSnopic.png",  // the default image
+                //     },
+                //     new go.Binding("source", "pic", findHeadShot)),
                 // define the panel where the text will appear
                 $(go.Panel, "Table",
                     {
@@ -290,7 +289,7 @@ function init() {
                             myDiagram.startTransaction("vacate");
                             // update the key, name, picture, and comments, but leave the title
                             myDiagram.model.setDataProperty(thisemp, "type", "(Vacant)");
-                            myDiagram.model.setDataProperty(thisemp, "pic", "");
+                            // myDiagram.model.setDataProperty(thisemp, "pic", "");
                             myDiagram.model.setDataProperty(thisemp, "comments", ""); 
                             myDiagram.commitTransaction("vacate");
                         }
@@ -364,7 +363,8 @@ function init() {
         "type": {}, 
         "description": {}, 
         "comments": {},
-        "fullfill": { type: "select", choices: ["true", "false"] }
+        "fullfill": { type: "select", choices: ["true", "false"] },
+        "pic": {show: false}
     }}
     );
   
