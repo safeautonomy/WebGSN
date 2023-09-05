@@ -4,7 +4,7 @@ function init() {
         // Set a flag in sessionStorage to indicate that the page has loaded once
         sessionStorage.setItem('firstLoad', '1');
         window.location.reload();
-    } 
+    };
     const $ = go.GraphObject.make;  // for conciseness in defining templates
     myDiagram =
         new go.Diagram("myDiagramDiv", // must be the ID or reference to div
@@ -15,7 +15,7 @@ function init() {
                 maxSelectionCount: 1, // users can select only one part at a time
                 validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
                 "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
-                    type: "(new person)",
+                    type: "(Goal, Subgoal, strategy, Context, Solution, Justification, Assumption)",
                     description: "",
                     comments: ""
                 },
@@ -46,25 +46,28 @@ function init() {
                         }),
                 "undoManager.isEnabled": true // enable undo & redo
             });
+           
      //fetch Data
      const getSafetyCase = async() => { 
         try{ 
         const res = await fetch(`http://localhost:5000/safetycases`);
         const data = await res.json();
         load(data);
+        console.log(`topic: ${data.data[0].topic}`);
         document.getElementById("mySavedModel").value = JSON.stringify(data);
         myDiagram.add(
-            $(go.Part, { location: new go.Point(500, -50) },
+            $(go.Part, { location: new go.Point(50, 50) },
             $(go.Panel, "Table",
             $(go.TextBlock, "Topic: ", textStyle(),
-            { font: "bold 24pt 'VT323', monospace", row: 0, column: 0, margin: 3 }),
-            $(go.TextBlock, data.data[0].topic, { font: "bold 24pt 'VT323', monospace", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }))));
+            { font: "Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 1 }),
+            $(go.TextBlock, data.data[0].topic, { font: "20px Arial, Helvetica, sans-serif", stroke: "black", row: 0, column: 1, name: "topicTextBlock" })))),
             new go.Binding("text", data.data[0].topic ).makeTwoWay();
         } catch(error){
         console.log(error)
         }
     };
     getSafetyCase();
+
     // Create a data object for the diagram's topic
      const diagramData = {
         topic: "Your Topic Here", // Initial topic value
@@ -89,11 +92,10 @@ function init() {
         }
     });
 
-    const levelColors = ["#c40a0a", "#62d1c0", "#f0a732", "#136eab", "#d647d4", "#a1d966", "#7f56e8",
-         "#b16eff"];
+    const levelColors = ["#000000"];
 
     // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
-    myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
+        myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
         go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
         // then go through all of the vertexes and set their corresponding node's Shape.fill
         // to a brush dependent on the TreeVertex.level value
@@ -117,14 +119,8 @@ function init() {
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
     function textStyle() {
-        return { font: "14pt  'VT323', monospace", stroke: "black", spacingAbove: 3, spacingBelow: 3 };
-    }
-
-    // This converter is used by the Picture.
-    // function findHeadShot(pic) {
-    //     if (!pic) return "images/HSnopic.png"; // There are only 16 images on the server
-    //     return "images/HS" + pic;
-    // }
+        return { font: "12pt  'Arial, Helvetica, sans-serif", stroke: "black", spacingAbove: 3, spacingBelow: 3 };
+    };
 
     // define the Node template
     myDiagram.nodeTemplate =
@@ -171,23 +167,14 @@ function init() {
         $(go.Panel, "Auto",
             { name: "BODY" },
             // define the node's outer shape
-            $(go.Shape, "RoundedRectangle",
-                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", height: 200 },
+            $(go.Shape, "Rectangle",
+                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: NaN, height: NaN },
                 // fullfill change color
-                new go.Binding("fill", "fullfill", function(fullfill) {
-                    return fullfill ? "lightgray" : "white";
-                })
+                // new go.Binding("fill", "fullfill", function(fullfill) {
+                //     return fullfill ? "lightgray" : "white";
+                // })
                 ),  
             $(go.Panel, "Horizontal",
-                // $(go.Picture,
-                //     {
-                //         name: "Picture",
-                //         desiredSize: new go.Size(70, 70),
-                //         margin: 1.5,
-                //         source: "images/HSnopic.png",  // the default image
-                //     },
-                //     new go.Binding("source", "pic", findHeadShot)),
-                // define the panel where the text will appear
                 $(go.Panel, "Table",
                     {
                         minSize: new go.Size(130, NaN),
@@ -196,13 +183,13 @@ function init() {
                         defaultAlignment: go.Spot.Left,
                     },
                     $(go.RowColumnDefinition, { column: 2, width: 4}),
-                    $(go.TextBlock, "Type: ", textStyle(),
+                    $(go.TextBlock, textStyle(),
                     { row: 0, column: 0, margin: 3 }),
                     $(go.TextBlock, textStyle(),  // the name
                         {
                             name: "TYPETB",
-                            row: 0, column: 1, columnSpan: 1,
-                            font: "18pt 'VT323', monospace",
+                            row: 0, column: 0, columnSpan: 1,
+                            font: "bold 20px Arial, Serif",
                             editable: true, isMultiline: false,
                             minSize: new go.Size(50, 16),
                             margin:(0, 0, 5, 0),
@@ -220,10 +207,10 @@ function init() {
                         new go.Binding("text", "description").makeTwoWay()),
                     $(go.TextBlock, textStyle(),
                         { row: 1, column: 0, margin: 3 },
-                        new go.Binding("text", "key", v => "Hierarchy: " + v)),
-                    $(go.TextBlock, textStyle(),
-                        { row: 2, column: 0, margin: 3 },
-                        new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
+                        new go.Binding("text", "key", v => "ID: " + v)),
+                    // $(go.TextBlock, textStyle(),
+                    //     { row: 2, column: 0, margin: 3 },
+                    //     new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
                     $(go.TextBlock, textStyle(),  // the comments
                         {
                             row: 4, column: 0, columnSpan: 5,
@@ -261,13 +248,27 @@ function init() {
         if (!node) return;
         const thisemp = node.data;
         myDiagram.startTransaction("Add Task");
-        const newemp = { type: "(new person)", comments: "", parent: thisemp.key };
+        // const newemp = { type: "(Goal, Sub-Goal, strategy...etc.)", comments: "", parent: thisemp.key };
+        // When add a new node alert
+        const newType = window.prompt("Enter type for the new task: ", "Goal, Subgoal, strategy, Context, Solution, Justification, Assumption");
+        if (newType !== null) {
+            const newemp = {
+                type: newType,
+                comments: "",
+                parent: thisemp.key
+            };
+        
         myDiagram.model.addNodeData(newemp);
         const newnode = myDiagram.findNodeForData(newemp);
         if (newnode) newnode.location = node.location;
-        myDiagram.commitTransaction("Add Task");
+        setNodeShape(newnode);
+        // myDiagram.commitTransaction("Add Task");
         myDiagram.commandHandler.scrollToPart(newnode);
     }
+    myDiagram.commitTransaction("Add Task");
+
+    };
+
 
     // the context menu allows users to make a position vacant,
     // remove a role and reassign the subtree, or remove a department
@@ -363,7 +364,7 @@ function init() {
         "type": {}, 
         "description": {}, 
         "comments": {},
-        "fullfill": { type: "select", choices: ["true", "false"] },
+        // "fullfill": { type: "select", choices: ["true", "false"] },
         "pic": {show: false}
     }}
     );
@@ -417,6 +418,36 @@ function init() {
  
 } // end init
 
+// -------Add a custom function to set the shape based on the "type" property
+function setNodeShape(node) {
+    const shape = node.findObject("SHAPE");
+    const type = node.data.type;
+    if (shape && type) {
+        if (/Subgoal.*/i.test(type)) {
+            // Set the child node shape to rectangular
+            shape.figure = "Rectangle";
+            // shape.fill = "lightblue";
+        } else if (/Solution.*/i.test(type)) {
+            // Set the grandchild node shape to circular
+            shape.figure = "Circle";
+            // shape.fill = "lightgreen";
+        } else if (/Strategy.*/i.test(type)) {
+            // Set the grandchild node shape to circular
+            shape.figure = "Parallelogram";
+            // shape.fill = "lightgreen";
+            console.log(shape);
+        } else if (/Context.*/i.test(type)) {
+            // Set the grandchild node shape to circular
+            shape.figure = "Terminator";
+            // shape.fill = "lightgreen";
+        } else if (/Assumption.*/i.test(type) || /Justification.*/i.test(type)) {
+            // Set the grandchild node shape to circular
+            shape.figure = "Ellipse";
+            // shape.fill = "lightgreen";
+        }
+    }
+};
+
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;
@@ -429,7 +460,13 @@ function load(data) {
         const treeModel = go.GraphObject.make(go.TreeModel);
         treeModel.nodeDataArray = modelData;
         myDiagram.model = treeModel;
+        // Call setNodeShape for each node in the diagram to set the shapes correctly
+        myDiagram.nodes.each(node => {setNodeShape(node); myDiagram.updateAllTargetBindings(node);});
         // console.log("Data loaded:", modelData);
+        const topicTextBlock = myDiagram.findNodeForKey(1).findObject("topicTextBlock");
+        if (topicTextBlock) {
+            topicTextBlock.text = data.data[0].topic;
+        };
         // make sure new data keys are unique positive integers
         let lastkey = 1;
         myDiagram.model.makeUniqueKeyFunction = (model, modelData) => {
