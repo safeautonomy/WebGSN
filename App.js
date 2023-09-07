@@ -31,7 +31,7 @@ function init() {
                 layout:
                     $(go.TreeLayout,
                         {
-                            treeStyle: go.TreeLayout.StyleLastParents,
+                            // treeStyle: go.TreeLayout.StyleLastParents,
                             arrangement: go.TreeLayout.ArrangementHorizontal,
                             // properties for most of the tree:
                             angle: 90,
@@ -45,6 +45,7 @@ function init() {
                             setsChildPortSpot: false
                         }),
                 "undoManager.isEnabled": true // enable undo & redo
+                
             });
            
      //fetch Data
@@ -53,10 +54,10 @@ function init() {
         const res = await fetch(`http://localhost:5000/safetycases`);
         const data = await res.json();
         load(data);
-        console.log(`topic: ${data.data[0].topic}`);
+        // console.log(`topic: ${data.data[0].topic}`);
         document.getElementById("mySavedModel").value = JSON.stringify(data);
         myDiagram.add(
-            $(go.Part, { location: new go.Point(50, 50) },
+            $(go.Part, { location: new go.Point(0, 10) },
             $(go.Panel, "Table",
             $(go.TextBlock, "Topic: ", textStyle(),
             { font: "Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 1 }),
@@ -97,8 +98,8 @@ function init() {
     // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
         myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
         go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
-        // then go through all of the vertexes and set their corresponding node's Shape.fill
-        // to a brush dependent on the TreeVertex.level value
+    //     // then go through all of the vertexes and set their corresponding node's Shape.fill
+    //     // to a brush dependent on the TreeVertex.level value
         myDiagram.layout.network.vertexes.each(v => {
             if (v.node) {
                 const level = v.level % (levelColors.length);
@@ -125,8 +126,7 @@ function init() {
     // define the Node template
     myDiagram.nodeTemplate =
     $(go.Node, "Spot",
-        {   
-            selectionObjectName: "BODY",
+        {   selectionObjectName: "BODY",
             mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
             mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
             // handle dragging a Node onto a Node to (maybe) change the reporting relationship
@@ -168,7 +168,7 @@ function init() {
             { name: "BODY" },
             // define the node's outer shape
             $(go.Shape, "Rectangle",
-                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: NaN, height: NaN },
+                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 300, height: NaN },
                 // fullfill change color
                 // new go.Binding("fill", "fullfill", function(fullfill) {
                 //     return fullfill ? "lightgray" : "white";
@@ -241,34 +241,56 @@ function init() {
             },
             // button is visible either when node is selected or on mouse-over
             new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-        )
+        ),
+        // Bind fromSpot and toSpot to the linkDirection property
+        new go.Binding("fromSpot", "linkDirection", function (linkDirection) {
+            if (linkDirection === "Top") return go.Spot.Top;
+            if (linkDirection === "Bottom") return go.Spot.Bottom;
+            if (linkDirection === "Left") return go.Spot.Left;
+            if (linkDirection === "Right") return go.Spot.Right;
+            return go.Spot.Bottom;  // Default value
+        }),
+        new go.Binding("toSpot", "linkDirection", function (linkDirection) {
+            if (linkDirection === "Top") return go.Spot.Bottom;
+            if (linkDirection === "Bottom") return go.Spot.Top;
+            if (linkDirection === "Left") return go.Spot.Right;
+            if (linkDirection === "Right") return go.Spot.Left;
+            return go.Spot.Top;  // Default value
+        }),
     );  // end Node, a Spot Panel
 
     function addEmployee(node) {
         if (!node) return;
         const thisemp = node.data;
         myDiagram.startTransaction("Add Task");
-        // const newemp = { type: "(Goal, Sub-Goal, strategy...etc.)", comments: "", parent: thisemp.key };
         // When add a new node alert
         const newType = window.prompt("Enter type for the new task: ", "Goal, Subgoal, strategy, Context, Solution, Justification, Assumption");
         if (newType !== null) {
-            const newemp = {
+        const newemp = {
                 type: newType,
                 comments: "",
-                parent: thisemp.key
+                parent: thisemp.key,
+                linkDirection: "",
             };
-        
-        myDiagram.model.addNodeData(newemp);
-        const newnode = myDiagram.findNodeForData(newemp);
-        if (newnode) newnode.location = node.location;
-        setNodeShape(newnode);
-        // myDiagram.commitTransaction("Add Task");
-        myDiagram.commandHandler.scrollToPart(newnode);
-    }
-    myDiagram.commitTransaction("Add Task");
-
+            if (/Subgoal.*/i.test(newType) || /G.*/.test(newType)) {
+                newemp.linkDirection = "bottom";
+            } else if (/Solution.*/i.test(newType) || /Sn.*/.test(newType)) {
+                newemp.linkDirection = "bottom";
+            } else if (/Strategy.*/i.test(newType) || /S.*/.test(newType)) {
+                newemp.linkDirection = "bottom";
+            } else if (/Context.*/i.test(newType) || /C.*/.test(newType)) {
+                newemp.linkDirection = "right";
+            } else if (/Assumption.*/i.test(newType) || /Justification.*/i.test(newType) || /J.*/.test(newType) || /A.*/.test(newType)) {
+                newemp.linkDirection = "left";
+            }
+            myDiagram.model.addNodeData(newemp);
+            const newnode = myDiagram.findNodeForData(newemp);
+            if (newnode) newnode.location = node.location;
+            setNodeShape(newnode);
+            myDiagram.commandHandler.scrollToPart(newnode);
+        }
+        myDiagram.commitTransaction("Add Task");
     };
-
 
     // the context menu allows users to make a position vacant,
     // remove a role and reassign the subtree, or remove a department
@@ -336,14 +358,12 @@ function init() {
 
     // define the Link template
     myDiagram.linkTemplate =
-        $(go.Link, go.Link.Orthogonal,
+        $(go.Link,
             {
                 layerName: "Background",
                 routing: go.Link.AvoidsNodes,
                 corner: 10,  
-                toShortLength: 7,
-                fromSpot: go.Spot.Bottom, 
-                toSpot: go.Spot.Top
+                toShortLength: 7,     
             },
             $(go.Shape, 
             { 
@@ -353,7 +373,39 @@ function init() {
                 toArrow: "Standard",
                 fill: "yellow",
                 strokeWidth: 3, 
-                stroke: "black" }));  // the link shape
+                stroke: "black" 
+            }),
+            new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
+            new go.Binding("toSpot", "toSpot", go.Spot.parse),
+        new go.Binding("fromSpot", "", function (data) {
+            if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
+                return go.Spot.Top;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
+                return go.Spot.Bottom;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
+                return go.Spot.Left;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
+                return go.Spot.Right;
+            } else {
+                return go.Spot.Bottom; // Default value
+            }
+        }),
+        new go.Binding("toSpot", "", function (data) {
+            if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
+                return go.Spot.Bottom;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
+                return go.Spot.Top;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
+                return go.Spot.Right;
+            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
+                return go.Spot.Left;
+            } else {
+                return go.Spot.Top; // Default value
+            }
+        })        
+        
+        );  // the link shape
+        
 
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
@@ -364,19 +416,53 @@ function init() {
         "type": {}, 
         "description": {}, 
         "comments": {},
-        // "fullfill": { type: "select", choices: ["true", "false"] },
-        "pic": {show: false}
+        "fullfill": { type: "select", choices: ["true", "false"], show: false },
+        "pic": {show: false},
+        "linkDirection": {
+            type: "select",
+            choices: ["top", "bottom", "left", "right"],
+        },
     }}
     );
   
     // Setup zoom to fit button
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
-
     document.getElementById('centerRoot').addEventListener('click', () => {
         myDiagram.scale = 1;
         myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
         
     });
+
+    // Update the link direction when the user changes it in the inspector
+    myInspector._updateTarget = function (id, value) {
+        let diagram = myDiagram;
+    diagram.startTransaction("updateLinkDirection");
+    let selectedNode = diagram.selection.first();
+    if (selectedNode && id === "linkDirection") {
+        // Update the link direction property of the selected node
+        selectedNode.data.linkDirection = value;
+        // Update fromSpot and toSpot based on the linkDirection
+        if (value === "top") {
+            selectedNode.data.fromSpot = go.Spot.Top;
+            selectedNode.data.toSpot = go.Spot.Bottom;
+        } else if (value === "bottom") {
+            selectedNode.data.fromSpot = go.Spot.Bottom;
+            selectedNode.data.toSpot = go.Spot.Top;
+        } else if (value === "left") {
+            selectedNode.data.fromSpot = go.Spot.Left;
+            selectedNode.data.toSpot = go.Spot.Right;
+        } else if (value === "right") {
+            selectedNode.data.fromSpot = go.Spot.Right;
+            selectedNode.data.toSpot = go.Spot.Left;
+        } else {
+            // Set default values here if needed
+        }
+        diagram.commitTransaction("updateLinkDirection");
+        // After updating the property, update the diagram to reflect the changes
+        diagram.updateAllTargetBindings(selectedNode);
+    }
+    };
+
     // get modified JSON
     const modifiedJSON = document.getElementById("mySavedModel").value;
     // Add an event listener to the "Update Data" button
@@ -418,32 +504,50 @@ function init() {
  
 } // end init
 
-// -------Add a custom function to set the shape based on the "type" property
+// Add a custom function to set the shape based on the "type" property
 function setNodeShape(node) {
     const shape = node.findObject("SHAPE");
     const type = node.data.type;
     if (shape && type) {
-        if (/Subgoal.*/i.test(type)) {
-            // Set the child node shape to rectangular
+        if (/Subgoal.*/i.test(type) || /G.*/.test(type)) {
             shape.figure = "Rectangle";
             // shape.fill = "lightblue";
-        } else if (/Solution.*/i.test(type)) {
-            // Set the grandchild node shape to circular
+        } else if (/Solution.*/i.test(type) || /Sn.*/.test(type)) {
             shape.figure = "Circle";
             // shape.fill = "lightgreen";
-        } else if (/Strategy.*/i.test(type)) {
-            // Set the grandchild node shape to circular
+        } else if (/Strategy.*/i.test(type) || /S.*/.test(type)) {
             shape.figure = "Parallelogram";
             // shape.fill = "lightgreen";
-            console.log(shape);
-        } else if (/Context.*/i.test(type)) {
-            // Set the grandchild node shape to circular
+            // console.log(shape);
+        } else if (/Context.*/i.test(type) || /C.*/.test(type)) {
             shape.figure = "Terminator";
             // shape.fill = "lightgreen";
-        } else if (/Assumption.*/i.test(type) || /Justification.*/i.test(type)) {
-            // Set the grandchild node shape to circular
+        } else if (/Assumption.*/i.test(type) || /Justification.*/i.test(type) || /J.*/.test(type) || /A.*/.test(type)) {
             shape.figure = "Ellipse";
             // shape.fill = "lightgreen";
+        };
+        // Set the fromSpot and toSpot based on linkDirection property
+    const linkDirection = node.data.linkDirection;
+    if (linkDirection) {
+        if (linkDirection === "top") {
+            node.fromSpot = go.Spot.Top;
+            node.toSpot = go.Spot.Bottom;
+        } else if (linkDirection === "bottom") {
+            node.fromSpot = go.Spot.Bottom;
+            node.toSpot = go.Spot.Top;
+        } else if (linkDirection === "left") {
+            node.fromSpot = go.Spot.Left;
+            node.toSpot = go.Spot.Right;
+        } else if (linkDirection === "right") {
+            node.fromSpot = go.Spot.Right;
+            node.toSpot = go.Spot.Left;
+        }
+    }
+        if (linkDirection) {
+            if (linkDirection === "left" || linkDirection === "right") {
+                // Adjust the alignment for "left" and "right" links
+                node.alignment = new go.Spot(0.5, 0.5);
+            }
         }
     }
 };
