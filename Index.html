@@ -31,24 +31,30 @@
                 <button id="blobButton">Download Image</button>
                 <button id="downloadJsonButton">Download JSON</button>
             </div>
-            <div id="topicEditor">
-                <input id="topicInput" placeholder="Enter a new topic">
-                <button id="updateTopic" disabled>Change Topic</button>
+            <div id="searchbar">
+                <input id="searchInput" placeholder="Search by topic">
+                <button id="searchTopic" disabled>Search Safety Case</button>
             </div>
         </div>
         <div id="myDiagramDiv" style="background-color: gray; border: solid 1px black; width: 100%; height: 900px;">
         </div>
         <div>
             <h2>It's a template, Please edit the Diagram manually</h2><br>
+
+            <div id="topicEditor">
+                <input id="topicInput" placeholder="Enter a new topic">
+                <button id="updateTopic" disabled>Change Topic</button>
+            </div>
             Details:<br>
             <div id="myInspector"></div>
         </div>
         <div>
-            <button id="SaveButton" onclick="save()">Enter</button>
+            <button id="saveButton" onclick="save()">Enter</button>
+            <button id="addNewButton" disabled onclick="addNewSC()">Create Safety Case</button>
             <button id="updateDataButton" disabled>Save Changes</button>
             <!-- <button onclick="load()">Load</button> -->
             <!-- Diagram Model saved in JSON format: -->
-        </div>
+            <!-- </div>
         <ol>
             <li>By selecting a geometric figure you could edit it.</li>
             <li>By clicking <strong>▲</strong> to collapse the diagram.</li>
@@ -65,8 +71,7 @@
             <li>Please click <strong>Download Image</strong> to download the image</li>
             <li>Please click <strong>Download JSON</strong> to download the JSON file</li>
         </ol>
-        <div>
-
+        <div> -->
             <textarea id="mySavedModel" style=" display: none; width:100%; height:270px;"></textarea>
         </div>
     </div>
