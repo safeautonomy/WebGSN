@@ -1,10 +1,10 @@
 async function init() {
     // Check if this is the first page load
-    if (sessionStorage.getItem('firstLoad') === null) {
-        // Set a flag in sessionStorage to indicate that the page has loaded once
-        sessionStorage.setItem('firstLoad', '1');
-        window.location.reload();
-    };
+    // if (sessionStorage.getItem('firstLoad') === null) {
+    //     // Set a flag in sessionStorage to indicate that the page has loaded once
+    //     sessionStorage.setItem('firstLoad', '1');
+    //     window.location.reload();
+    // };
     const $ = go.GraphObject.make;  // for conciseness in defining templates
     myDiagram =
         new go.Diagram("myDiagramDiv", // must be the ID or reference to div
@@ -49,11 +49,17 @@ async function init() {
             });
             let myTopic = await getSafetyCase();
             let serTopic ;
+            let latestTopic ;
             const setSerTopic = (x) =>{
                 serTopic = x;
                 topicTextB.findObject("topicTextBlock").text = serTopic;
             }
-            let topicText = serTopic != null ? serTopic : myTopic;
+            const setLatstTopic = (y) =>{
+                console.log(`y: ${y}`);
+                latestTopic = y;
+                topicTextB.findObject("topicTextBlock").text = latestTopic;
+            }
+            let topicText = latestTopic != null ? latestTopic : (serTopic != null ? serTopic : myTopic);
             const topicTextB =
         $(go.Part,
             { position: new go.Point(50, 50) },
@@ -164,7 +170,7 @@ async function init() {
             { name: "BODY" },
             // define the node's outer shape
             $(go.Shape, "Rectangle",
-                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 300, height: NaN },
+                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 350, height: NaN },
                 // fullfill change color
                 // new go.Binding("fill", "fullfill", function(fullfill) {
                 //     return fullfill ? "lightgray" : "white";
@@ -175,7 +181,7 @@ async function init() {
                     {
                         minSize: new go.Size(130, NaN),
                         maxSize: new go.Size(200, NaN),
-                        margin: new go.Margin(6, 10, 0, 6),
+                        margin: new go.Margin(6, 10, 6, 10),
                         defaultAlignment: go.Spot.Left,
                     },
                     $(go.RowColumnDefinition, { column: 2, width: 4}),
@@ -461,6 +467,8 @@ async function init() {
 
     // Add an event listener to the "Update Data" button
     const updateDataButton = document.getElementById("updateDataButton");
+    const addNewButton = document.getElementById("addNewButton");
+    const firstTopic = document.getElementById("firstTopic");
     updateDataButton.addEventListener("click", () => {
     const modifiedJSON = document.getElementById("mySavedModel").value;
     const searchInput = document.getElementById('searchInput').value;
@@ -468,12 +476,10 @@ async function init() {
     });
     // Enable the button when you have modifiedJSON
     function enableUpdateButton() {
-    const updateDataButton = document.getElementById("updateDataButton");
+    addNewButton.removeAttribute("disabled")
     updateDataButton.removeAttribute("disabled");
-    addNewButton.removeAttribute("disabled");
     };
     function disableUpdateButton() {
-    const updateDataButton = document.getElementById("updateDataButton");
     updateDataButton.setAttribute("disabled", "true");
     };
     document.getElementById('saveButton').addEventListener('click', () => enableUpdateButton());
@@ -490,13 +496,26 @@ async function init() {
         searchTopic(searchInput);
         x = await searchTopic(searchInput);
         // Promise.resolve(x);
-        console.log(`X : ${x}`)
+        // console.log(`X : ${x}`)
         setSerTopic(x);
     });
     // add new safety case
-    addNewButton.addEventListener("click", () => {
+    addNewButton.addEventListener("click", async() => {
         const modifiedJSON = document.getElementById("mySavedModel").value;
         addNewSC(modifiedJSON);
+        window.alert('Please Change the topic');
+        getLatstOne();
+        setTimeout(y = await getLatstOne(),3000);
+        // Promise.resolve(y);
+        // console.log(`y : ${y}`)
+        setLatstTopic(y);
+        document.getElementById("updateTopic").style.visibility = "hidden";
+        document.getElementById("firstTopic").style.visibility = "visible";
+    });
+    // update topic for latest one
+    firstTopic.addEventListener("click", ()=>{
+        const topicInput = document.getElementById('topicInput').value;
+        updateLatestTopic(topicInput);
     });
     document.getElementById('topicInput').addEventListener('input', function () {
         const topicInputValue = document.getElementById('topicInput').value;
@@ -509,31 +528,33 @@ async function init() {
         }
     });
     document.getElementById('searchInput').addEventListener('input', function () {
-        const searchInputValue = document.getElementById('searchInput').value;
         const searchTopicButton = document.getElementById('searchTopic');
+        const searchInput = document.getElementById('searchInput').value;
         // Check if the input value is not empty and enable/disable the button accordingly
-        if (searchInputValue !== '') {
+        if (searchInput !== '') {
             searchTopicButton.removeAttribute('disabled');
         } else {
             searchTopicButton.setAttribute('disabled', 'true');
         }
     });
-
     // save as image
     document.getElementById("blobButton").addEventListener("click", makeBlob);
     // save as JSON
     document.getElementById("downloadJsonButton").addEventListener("click", downloadJson);
-    
 } // end init
 
  //fetch Data
  const getSafetyCase = async() => { 
     try{ 
-    const res = await fetch(`http://localhost:5000/safetycases/64e49de0884ff8008dcfc289`);
+    const res = await fetch(`./template.json`);
     const data = await res.json();
     // console.log(`1: ${data.data.topic}`)
     const newTopic = data.data.topic;
     load(data);
+    // const updateDataButton = document.getElementById("updateDataButton");
+    // if (updateDataButton) {
+    //     updateDataButton.remove();
+    // };
     myTopic = newTopic;
     return myTopic
     } catch(error){
@@ -595,18 +616,13 @@ function save() {
 
 function load(data) {
     // myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-    if (data && data.data.nodeDataArray) {
+if (data && data.data.nodeDataArray) {
         const modelData = data.data.nodeDataArray;
         const treeModel = go.GraphObject.make(go.TreeModel);
         treeModel.nodeDataArray = modelData;
         myDiagram.model = treeModel;
         // Call setNodeShape for each node in the diagram to set the shapes correctly
         myDiagram.nodes.each(node => {setNodeShape(node); myDiagram.updateAllTargetBindings(node);});
-        // ------
-        // const topicTextBlock = myDiagram.findNodeForKey(1).findObject("topicTextBlock");
-        // if (topicTextBlock) {
-        //     topicTextBlock.text = topicText;
-        // };
         let lastkey = 1;
         myDiagram.model.makeUniqueKeyFunction = (model, modelData) => {
             let k = modelData.key || lastkey;
@@ -619,11 +635,11 @@ function load(data) {
     }
 };
 // Add a new safety case
-async function addNewSC(modifiedJSON){
+ const addNewSC = async(modifiedJSON) =>{
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
-    console.log(`POST: ${finalModifiedJson}`);
+    // console.log(`POST: ${finalModifiedJson}`);
     try {
         const response = await fetch('http://localhost:5000/safetycases', {
             method: 'POST',
@@ -634,7 +650,6 @@ async function addNewSC(modifiedJSON){
         });
         if (response.ok) {
             console.log('Data updated successfully.');
-            location.reload();
         } else {
             console.error('Failed to update data.');
         }
@@ -651,9 +666,27 @@ const searchTopic = async(searchInput) => {
         const newTopic = data.data.topic;
         serTopic = newTopic
         load(data);
-        console.log(`newTopic: ${newTopic}`);
-        console.log(`serTopic: ${serTopic}`);
+        // console.log(`newTopic: ${newTopic}`);
+        // console.log(`serTopic: ${serTopic}`);
         return serTopic
+    } catch (error) {
+        window.alert("No such safety case exist")
+        console.error("Error searching for safety case:", error);
+    }
+};
+// get latest one
+const getLatstOne = async() => { 
+    try{ 
+        const response = await fetch('http://localhost:5000/safetycases/latest');
+        const data = await response.json();
+        // console.log(JSON.stringify(data, null, 2));
+        // console.log(`data: ${data.data[0].topic}`);
+        const newTopic = data.data[0].topic;
+        latestTopic = newTopic;
+        load(data);
+        console.log(`newTopic: ${newTopic}`);
+        console.log(`latestTopic: ${latestTopic}`);
+        return latestTopic
     } catch (error) {
         window.alert("No such safety case exist")
         console.error("Error searching for safety case:", error);
@@ -661,11 +694,11 @@ const searchTopic = async(searchInput) => {
 };
 
 // update from edit
-async function updateDatabase(modifiedJSON, searchInput) {
+ const  updateDatabase = async(modifiedJSON, searchInput) => {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
-    console.log(searchInput)
+    // console.log(searchInput)
     // console.log(`PUT: ${finalModifiedJson}`)
     try {
         const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
@@ -730,7 +763,7 @@ function myCallback(blob) {
   async function updateTopic(newTopic, searchInput) {
     try {
         // Define the data to be sent in the request body
-        const data = { topic: newTopic };
+        const data = { newTopic: newTopic };
         const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
             method: 'PUT',
             headers: {
@@ -748,7 +781,27 @@ function myCallback(blob) {
         console.error('Error updating the topic in the database:', error);
     };
 };
-
-
+  // update latest topic
+  async function updateLatestTopic(topicInput) {
+    try {
+        // Define the data to be sent in the request body
+        const data = { newTopic: topicInput };
+        const response = await fetch(`http://localhost:5000/safetycases/latest`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            console.log('Topic updated successfully in the database.');
+            location.reload();
+        } else {
+            console.error('Failed to update the topic in the database.');
+        };
+    } catch (error) {
+        console.error('Error updating the topic in the database:', error);
+    };
+};
 
 window.addEventListener('DOMContentLoaded', init);
