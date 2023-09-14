@@ -35,7 +35,7 @@ async function init() {
                             arrangement: go.TreeLayout.ArrangementHorizontal,
                             // properties for most of the tree:
                             angle: 90,
-                            layerSpacing: 35,
+                            layerSpacing: 50,
                             // properties for the "last parents":
                             alternateAngle: 90,
                             alternateLayerSpacing: 35,
@@ -62,7 +62,7 @@ async function init() {
             let topicText = latestTopic != null ? latestTopic : (serTopic != null ? serTopic : myTopic);
             const topicTextB =
         $(go.Part,
-            { position: new go.Point(50, 50) },
+            { position: new go.Point(0, 0) },
             $(go.Panel, "Table", // Set the position as desired
             $(go.TextBlock, "Topic: ", textStyle(),
             { font: "30px Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 10 }),
@@ -179,9 +179,9 @@ async function init() {
             $(go.Panel, "Horizontal",
                 $(go.Panel, "Table",
                     {
-                        minSize: new go.Size(130, NaN),
+                        minSize: new go.Size(200, NaN),
                         maxSize: new go.Size(200, NaN),
-                        margin: new go.Margin(6, 10, 6, 10),
+                        margin: new go.Margin(5, 2, 5, 2),
                         defaultAlignment: go.Spot.Left,
                     },
                     $(go.RowColumnDefinition, { column: 2, width: 4}),
@@ -190,7 +190,7 @@ async function init() {
                     $(go.TextBlock, textStyle(),  // the name
                         {
                             name: "TYPETB",
-                            row: 0, column: 0, columnSpan: 1,
+                            row: 0, column: 1, columnSpan: 1,
                             font: "bold 20px Arial, Serif",
                             editable: true, isMultiline: false,
                             minSize: new go.Size(50, 16),
@@ -198,7 +198,7 @@ async function init() {
                         },
                         new go.Binding("text", "type").makeTwoWay()),
                     $(go.TextBlock, "Description: ", textStyle(),
-                        { row: 3, column: 0, margin: 3 }),
+                        { row: 3, column: 0, margin:3, }),
                     $(go.TextBlock, textStyle(),
                         {
                             row: 4, column: 0, columnSpan: 4,
@@ -259,7 +259,7 @@ async function init() {
             if (linkDirection === "Right") return go.Spot.Left;
             return go.Spot.Top;  // Default value
         }),
-    );  // end Node, a Spot Panel
+    ); // end Node, a Spot Panel
     function addEmployee(node) {
         if (!node) return;
         const thisemp = node.data;
@@ -284,13 +284,14 @@ async function init() {
                 newemp.linkDirection = "right";
             } else if (/Assumption.*/i.test(newType) || /Justification.*/i.test(newType) || /J.*/.test(newType) || /A.*/.test(newType)) {
                 newemp.linkDirection = "left";
-            }
+            };
             myDiagram.model.addNodeData(newemp);
             const newnode = myDiagram.findNodeForData(newemp);
             if (newnode) newnode.location = node.location;
             setNodeShape(newnode);
             myDiagram.commandHandler.scrollToPart(newnode);
-        }
+        };
+        
         myDiagram.commitTransaction("Add Task");
     };
 
@@ -379,7 +380,7 @@ async function init() {
             }),
             new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
             new go.Binding("toSpot", "toSpot", go.Spot.parse),
-        new go.Binding("fromSpot", "", function (data) {
+            new go.Binding("fromSpot", "", function (data) {
             if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
                 return go.Spot.Top;
             } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
@@ -405,9 +406,7 @@ async function init() {
                 return go.Spot.Top; // Default value
             }
         })        
-        
         );  // the link shape
-        
 
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
@@ -511,6 +510,7 @@ async function init() {
         setLatstTopic(y);
         document.getElementById("updateTopic").style.visibility = "hidden";
         document.getElementById("firstTopic").style.visibility = "visible";
+        document.getElementById("topicEditor").style.visibility = "visible";
     });
     // update topic for latest one
     firstTopic.addEventListener("click", ()=>{
@@ -520,9 +520,11 @@ async function init() {
     document.getElementById('topicInput').addEventListener('input', function () {
         const topicInputValue = document.getElementById('topicInput').value;
         const updateTopicButton = document.getElementById('updateTopic');
+        const firstTopicButton = document.getElementById('firstTopic');
         // Check if the input value is not empty and enable/disable the button accordingly
         if (topicInputValue !== '') {
             updateTopicButton.removeAttribute('disabled');
+            firstTopicButton.removeAttribute('disabled');
         } else {
             updateTopicButton.setAttribute('disabled', 'true');
         }
@@ -537,20 +539,38 @@ async function init() {
             searchTopicButton.setAttribute('disabled', 'true');
         }
     });
+    // set nodes location
+    myDiagram.addDiagramListener("LayoutCompleted", function (e) {
+        myDiagram.nodes.each(function (node) {
+            const parent = node.findTreeParentNode();
+            if (node.data.linkDirection === "top") {
+                node.location = new go.Point(node.location.x, node.location.y +400); // Adjust the Y-coordinate as needed
+            } else if (node.data.linkDirection === "bottom") {
+                node.location = new go.Point(node.location.x, node.location.y -400); // Adjust the Y-coordinate as needed
+            } else if (node.data.linkDirection === "left") {
+                node.location = new go.Point(parent.location.x - 400, parent.location.y - 30); // Adjust the X-coordinate as needed
+            } else if (node.data.linkDirection === "right") {
+                node.location = new go.Point(parent.location.x + 400, parent.location.y); // Adjust the X-coordinate as needed
+            }
+        });
+    });
+    
     // save as image
     document.getElementById("blobButton").addEventListener("click", makeBlob);
     // save as JSON
     document.getElementById("downloadJsonButton").addEventListener("click", downloadJson);
 } // end init
 
- //fetch Data
+//fetch Data ------
  const getSafetyCase = async() => { 
     try{ 
-    const res = await fetch(`./template.json`);
-    const data = await res.json();
-    // console.log(`1: ${data.data.topic}`)
-    const newTopic = data.data.topic;
+    // const res = await fetch('/template.json');
+    // const data = await res.json();
+    const res = await document.getElementById("mySavedModel").value;
+    const data = await JSON.parse(res); 
     load(data);
+    // console.log(`1: ${data.data.topic}`)
+    const newTopic =data.data.topic;
     // const updateDataButton = document.getElementById("updateDataButton");
     // if (updateDataButton) {
     //     updateDataButton.remove();
@@ -583,7 +603,8 @@ function setNodeShape(node) {
             shape.figure = "Ellipse";
             // shape.fill = "lightgreen";
         };
-        // Set the fromSpot and toSpot based on linkDirection property
+    };
+// Set the fromSpot and toSpot based on linkDirection property
     const linkDirection = node.data.linkDirection;
     if (linkDirection) {
         if (linkDirection === "top") {
@@ -607,16 +628,15 @@ function setNodeShape(node) {
             }
         }
     }
-};
+
 
 function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;
-};
-
+}
 function load(data) {
     // myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-if (data && data.data.nodeDataArray) {
+    if (data && data.data.nodeDataArray) {
         const modelData = data.data.nodeDataArray;
         const treeModel = go.GraphObject.make(go.TreeModel);
         treeModel.nodeDataArray = modelData;
@@ -668,6 +688,7 @@ const searchTopic = async(searchInput) => {
         load(data);
         // console.log(`newTopic: ${newTopic}`);
         // console.log(`serTopic: ${serTopic}`);
+        if (data) document.getElementById("topicEditor").style.visibility = "visible";
         return serTopic
     } catch (error) {
         window.alert("No such safety case exist")
@@ -698,8 +719,8 @@ const getLatstOne = async() => {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
-    // console.log(searchInput)
-    // console.log(`PUT: ${finalModifiedJson}`)
+    console.log(`searchInput: ${searchInput}`);
+    console.log(`PUT: ${finalModifiedJson}`);
     try {
         const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
             method: 'PUT',
