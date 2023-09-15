@@ -492,6 +492,7 @@ async function init() {
     // search topic
     document.getElementById('searchTopic').addEventListener('click', async() =>{
         const searchInput = document.getElementById('searchInput').value;
+        updateDataButton.style.visibility = "visible";
         searchTopic(searchInput);
         x = await searchTopic(searchInput);
         // Promise.resolve(x);
