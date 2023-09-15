@@ -544,11 +544,12 @@ async function init() {
     myDiagram.addDiagramListener("LayoutCompleted", function (e) {
         myDiagram.nodes.each(function (node) {
             const parent = node.findTreeParentNode();
-            if (node.data.linkDirection === "top") {
-                node.location = new go.Point(node.location.x, node.location.y +400); // Adjust the Y-coordinate as needed
-            } else if (node.data.linkDirection === "bottom") {
-                node.location = new go.Point(node.location.x, node.location.y -400); // Adjust the Y-coordinate as needed
-            } else if (node.data.linkDirection === "left") {
+            // if (node.data.linkDirection === "top") {
+            //     node.location = new go.Point(node.location.x, node.location.y +400); // Adjust the Y-coordinate as needed
+            // } else if (node.data.linkDirection === "bottom") {
+            //     node.location = new go.Point(node.location.x, node.location.y -400); // Adjust the Y-coordinate as needed
+            // } else 
+            if (node.data.linkDirection === "left") {
                 node.location = new go.Point(parent.location.x - 400, parent.location.y - 30); // Adjust the X-coordinate as needed
             } else if (node.data.linkDirection === "right") {
                 node.location = new go.Point(parent.location.x + 400, parent.location.y); // Adjust the X-coordinate as needed
