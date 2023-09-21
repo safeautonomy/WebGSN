@@ -50,7 +50,7 @@ npm i
 ```
   And then to run the backend with the following command.
 ```
-Npm run dev
+npm run dev
 ```
 10. Trigger the web server. (in VSCode, click on **“Go Live”** at the bottom right)
 
