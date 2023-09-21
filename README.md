@@ -34,7 +34,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 2. Clone the repository from  [https://github.com/safeautonomy/WebGSN](https://github.com/safeautonomy/WebGSN)
 3. Use VScode to open the **WebGSN-main** folder. (When using VSCode, please also install **LiveServer** as an addon)
 4. Create a new `.env` file in the **backend** folder.
-5. Go to  [https://www.mongodb.com/](https://www.mongodb.com/) set up a database.
+5. Go to  [https://www.mongodb.com/](https://www.mongodb.com/) set up a database. ([How to set up a NoSQL database on MongoDB](https://docs.google.com/document/d/11Wooh6Nf2jHi10lps3vu3Pq9hC1Gk0q6F0uIBte0Uj8/edit?usp=drive_link))
 6. Paste the following text in `.env` file and don’t forget to save.
 ```
 MONGO_URI = URI WHICH YOU GET FROM MONGODB
