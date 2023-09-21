@@ -26,10 +26,9 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 
 * To run this application, **Node.js**, **NPM** package manager are needed. (if you have already installed it, please go directly to STEP 2.)
 
-1. Install Node.js & NPM. (on Terminal) ※Take Linux as example.
+1. Install Node.js & NPM with the following command line. (on Terminal) ※Take Linux as example.
 ```
  $ sudo apt update 
- $ sudo apt install nodejs (Node.js) 
  $ sudo apt install npm
 ```
 2. Clone the repository from  [https://github.com/safeautonomy/WebGSN](https://github.com/safeautonomy/WebGSN)
