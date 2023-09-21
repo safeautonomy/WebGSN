@@ -10,7 +10,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
     <img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white"/>
   </a>
   <a href="https://gojs.net/latest/learn/graphObject.html">
-  <img alt="https://img.shields.io/badge/GoJs-blue?style=for-the-badge&logo=go&logoColor=white">
+  <img src="https://img.shields.io/badge/GoJs-004880?style=for-the-badge&logo=go&logoColor=white">
   </a>
 </div>
 
