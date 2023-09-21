@@ -37,7 +37,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 5. Go to  [https://www.mongodb.com/](https://www.mongodb.com/) set up a database.
 6. Paste the following text in `.env` file and don’t forget to save.
 ```
-MONGO_URI = URI YOU GET FROM MONGODB
+MONGO_URI = URI WHICH YOU GET FROM MONGODB
 ```
 7. In VScode Open two terminal, you could achieve that by clicking ` ◫ ` .
 8. On one terminal change the directory to **WebGSN-main/frontend** and install all dependencies.
