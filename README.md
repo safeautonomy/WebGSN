@@ -12,6 +12,9 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
   <a href="https://gojs.net/latest/learn/graphObject.html">
   <img src="https://img.shields.io/badge/GoJs-004880?style=for-the-badge&logo=go&logoColor=white">
   </a>
+  <a href="https://code.visualstudio.com/download">
+  <img src="https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white">
+  </a>
 </div>
 
 ### Instruction of Installation - on local machine
