@@ -28,7 +28,7 @@ npm i
 ```
 npm i
 ```
- * And then to run the backend with the following command.
+  And then to run the backend with the following command.
 ```
 Npm run dev
 ```
