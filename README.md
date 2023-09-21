@@ -15,6 +15,8 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
   <a href="https://code.visualstudio.com/download">
   <img src="https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white">
   </a>
+  <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E">
+  <img src="https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white">
 </div>
 
 ### Instruction of Installation - on local machine
