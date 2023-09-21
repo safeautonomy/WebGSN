@@ -3,7 +3,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 
 ### Instruction of Installation - on local machine
 
-* To run this application, **Node.js**, **NPM** package manager are needed.(if you have already installed it, please go directly to STEP 2.)
+* To run this application, **Node.js**, **NPM** package manager are needed. (if you have already installed it, please go directly to STEP 2.)
 
 1. Install Node.js & NPM. (on Terminal) ※Take Linux as example.
 ```
@@ -28,7 +28,7 @@ npm i
 ```
 npm i
 ```
-And then to run the backend with the following command.
+ * And then to run the backend with the following command.
 ```
 Npm run dev
 ```
@@ -46,26 +46,26 @@ Npm run dev
 6. To add a new node outside of treemodel, by double clicking the background.
 7. Hover to an existing node, ` + ` would show up, click to add a new node below. 
 8. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, node would be shaped into different notation.
- The format is provided :  
- 8.1. Goal (G)  → Rectangle
- 8.2. Subgoal → Rectangle
- 8.3. strategy (S) → Parallelogram
- 8.4. Context (C) → Capsule
- 8.5. Solution (Sn) → Circle
- 8.6. Justification (J) → Ellipse
- 8.7. Assumption (A) → Ellipse
-9. By selecting a node to edit details.
-10. Scroll down to **Details**, input field would show up for you to edit.
-11. **Description** explain the task or the purpose of this node.
-12. **Comments** is an optional input for more information, if it’s needed.
-13. **linkDirection** decides which direction you wish the node to connect to its parent.
-14. **Parent** references the id number of the node one above your current node.
-15. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
-16. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
-17. Adjust where those nodes and the **Topic** should be located by Dragging it.
-18. If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
-19. By clicking ` ▲ ` to collapse the diagram.
-20. By clicking ` ▼ ` to expand the diagram.
-21. Press `Zoom to Fit` or `Center on root`, to include the whole diagram in image before download.
-22. Please click `Download Image` to download the image.
-23. Please click `Download JSON` to download the JSON file.
+ The format is provided :
+   * Goal (G)  → Rectangle
+   * Subgoal → Rectangle
+   * strategy (S) → Parallelogram
+   * Context (C) → Capsule
+   * Solution (Sn) → Circle
+   * Justification (J) → Ellipse
+   * Assumption (A) → Ellipse
+10. By selecting a node to edit details.
+11. Scroll down to **Details**, input field would show up for you to edit.
+12. **Description** explain the task or the purpose of this node.
+13. **Comments** is an optional input for more information, if it’s needed.
+14. **linkDirection** decides which direction you wish the node to connect to its parent.
+15. **Parent** references the id number of the node one above your current node.
+16. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
+17. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
+18. Adjust where those nodes and the **Topic** should be located by Dragging it.
+19. If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
+20. By clicking ` ▲ ` to collapse the diagram.
+21. By clicking ` ▼ ` to expand the diagram.
+22. Press `Zoom to Fit` or `Center on root`, to include the whole diagram in image before download.
+23. Please click `Download Image` to download the image.
+24. Please click `Download JSON` to download the JSON file.
