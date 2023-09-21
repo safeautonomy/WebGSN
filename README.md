@@ -3,7 +3,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 
 ### Instruction of Installation - on local machine
 
-#### To run this application, **Node.js**, **NPM** package manager are needed. 
+* To run this application, **Node.js**, **NPM** package manager are needed. 
 (if you have already installed it, please go directly to STEP 2.)
 
 1. Install Node.js & NPM. (on Terminal) ※Take Linux as example.
@@ -37,7 +37,7 @@ Npm run dev
 
 ### How to use WebGSN - on browser
 
-#### It's a template. Please edit the nodes and create a new safety case!
+* It's a template. Please edit the nodes and create a new safety case!
 
 1. Right click to select an action. (add node, delete node…etc.)
 2. `Delete node` delete a single node, `Delete Tree` is to delete all nodes below the node you’ve selected.
