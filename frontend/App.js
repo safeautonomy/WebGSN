@@ -11,7 +11,7 @@ async function init() {
             {
                 allowCopy: false,
                 allowDelete: false,
-                //initialAutoScale: go.Diagram.Uniform,
+                // initialAutoScale: go.Diagram.Uniform,
                 maxSelectionCount: 1, // users can select only one part at a time
                 validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
                 "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
@@ -215,8 +215,7 @@ async function init() {
                     //     new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
                     $(go.TextBlock, textStyle(),  // the comments
                         {
-                            row: 4, column: 0, columnSpan: 5,
-                            font: "12pt 'VT323', monospace",
+                            row: 5, column: 0, columnSpan: 5,
                             wrap: go.TextBlock.WrapFit,
                             editable: true,  // by default newlines are allowed
                             minSize: new go.Size(100, 14),
@@ -566,17 +565,10 @@ async function init() {
 //fetch Data ------
  const getSafetyCase = async() => { 
     try{ 
-    // const res = await fetch('/template.json');
-    // const data = await res.json();
     const res = await document.getElementById("mySavedModel").value;
     const data = await JSON.parse(res); 
     load(data);
-    // console.log(`1: ${data.data.topic}`)
     const newTopic =data.data.topic;
-    // const updateDataButton = document.getElementById("updateDataButton");
-    // if (updateDataButton) {
-    //     updateDataButton.remove();
-    // };
     myTopic = newTopic;
     return myTopic
     } catch(error){
@@ -597,7 +589,6 @@ function setNodeShape(node) {
         } else if (/Strategy.*/i.test(type) || /S.*/.test(type)) {
             shape.figure = "Parallelogram";
             // shape.fill = "lightgreen";
-            // console.log(shape);
         } else if (/Context.*/i.test(type) || /C.*/.test(type)) {
             shape.figure = "Terminator";
             // shape.fill = "lightgreen";
