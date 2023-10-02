@@ -1,10 +1,4 @@
 async function init() {
-    // Check if this is the first page load
-    // if (sessionStorage.getItem('firstLoad') === null) {
-    //     // Set a flag in sessionStorage to indicate that the page has loaded once
-    //     sessionStorage.setItem('firstLoad', '1');
-    //     window.location.reload();
-    // };
     const $ = go.GraphObject.make;  // for conciseness in defining templates
     myDiagram =
         new go.Diagram("myDiagramDiv", // must be the ID or reference to div
@@ -502,12 +496,12 @@ async function init() {
     addNewButton.addEventListener("click", async() => {
         const modifiedJSON = document.getElementById("mySavedModel").value;
         addNewSC(modifiedJSON);
-        window.alert('Please Change the topic');
-        getLatstOne();
-        setTimeout(y = await getLatstOne(),3000);
+        // window.alert('Please Change the topic');
+        // getLatstOne();
+        // setTimeout(y = await getLatstOne(),3000);
         // Promise.resolve(y);
         // console.log(`y : ${y}`)
-        setLatstTopic(y);
+        // setLatstTopic(y);
         document.getElementById("updateTopic").style.visibility = "hidden";
         document.getElementById("firstTopic").style.visibility = "visible";
         document.getElementById("topicEditor").style.visibility = "visible";
@@ -654,7 +648,7 @@ function load(data) {
     const finalModifiedJson = JSON.stringify(modifiedData);
     // console.log(`POST: ${finalModifiedJson}`);
     try {
-        const response = await fetch('http://localhost:5000/safetycases', {
+        const response = await fetch('https://webgsn-backend.onrender.com/safetycase', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -662,6 +656,7 @@ function load(data) {
             body: finalModifiedJson,
         });
         if (response.ok) {
+            getLatstOne();
             console.log('Data updated successfully.');
         } else {
             console.error('Failed to update data.');
@@ -674,7 +669,7 @@ function load(data) {
 const searchTopic = async(searchInput) => { 
     if(searchInput)
     try{ 
-        const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`);
+        const response = await fetch(`https://webgsn-backend.onrender.com/safetycase/topic/${searchInput}`);
         const data = await response.json();
         const newTopic = data.data.topic;
         serTopic = newTopic
@@ -691,13 +686,13 @@ const searchTopic = async(searchInput) => {
 // get latest one
 const getLatstOne = async() => { 
     try{ 
-        const response = await fetch('http://localhost:5000/safetycases/latest');
+        const response = await fetch('https://webgsn-backend.onrender.com/safetycase/latest');
         const data = await response.json();
         // console.log(JSON.stringify(data, null, 2));
         // console.log(`data: ${data.data[0].topic}`);
         const newTopic = data.data[0].topic;
         latestTopic = newTopic;
-        load(data);
+        promptMe();
         console.log(`newTopic: ${newTopic}`);
         console.log(`latestTopic: ${latestTopic}`);
         return latestTopic
@@ -715,7 +710,7 @@ const getLatstOne = async() => {
     console.log(`searchInput: ${searchInput}`);
     console.log(`PUT: ${finalModifiedJson}`);
     try {
-        const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
+        const response = await fetch(`https://webgsn-backend.onrender.com/safetycase/topic/${searchInput}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -776,9 +771,14 @@ function myCallback(blob) {
   // update topic
   async function updateTopic(newTopic, searchInput) {
     try {
-        // Define the data to be sent in the request body
+        const res = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${newTopic}`);
+        const topicData = await res.json();
+        const existingTopic = topicData.data.topic;
+        console.log(`existingTopic: ${existingTopic}`);
+        window.alert('This Topic is already exist please choose another');     
+    } catch (error) {
         const data = { newTopic: newTopic };
-        const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
+        const response = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${searchInput}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -791,31 +791,40 @@ function myCallback(blob) {
         } else {
             console.error('Failed to update the topic in the database.');
         };
-    } catch (error) {
         console.error('Error updating the topic in the database:', error);
     };
 };
   // update latest topic
-  async function updateLatestTopic(topicInput) {
+  async function updateLatestTopic(firstNewTopic) {
     try {
-        // Define the data to be sent in the request body
-        const data = { newTopic: topicInput };
-        const response = await fetch(`http://localhost:5000/safetycases/latest`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-        if (response.ok) {
-            console.log('Topic updated successfully in the database.');
-            location.reload();
-        } else {
-            console.error('Failed to update the topic in the database.');
-        };
+        const res = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${firstNewTopic}`);
+        const topicData = await res.json();
+        const existingTopic = topicData.data.topic;
+        console.log(`existingTopic: ${existingTopic}`);
+        window.alert('This Topic is already exist please choose another');   
+        location.reload();
     } catch (error) {
+        const data = { newTopic: firstNewTopic };
+        const response = await fetch(`https://webgsn-backend.onrender.com/safetycases/latest`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+        console.log('Topic updated successfully in the database.');
+        location.reload();
         console.error('Error updating the topic in the database:', error);
     };
+};
+
+// topicPrompt
+const promptMe = ()=>{
+    const firstNewTopic = window.prompt('Please Change the topic');
+    updateLatestTopic(firstNewTopic);
+    console.log(`firstNewTopic: ${firstNewTopic}`);
+    // setLatstTopic(firstNewTopic);
+    return firstNewTopic;
 };
 
 window.addEventListener('DOMContentLoaded', init);
