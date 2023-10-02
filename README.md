@@ -2,6 +2,10 @@
 
 A web-based tool for viewing and modifying assurance arguments in Goal-Structured-Notation (GSN), with capabilities to store as a local file or into a database
 
+[Try out WebGSN without installation](https://webgsn.netlify.app/)
+
+[How to use WebGSN](https://www.youtube.com/watch?v=CIrv9jM2jyo)
+
 <div id="badges" align="center">
   <a href="https://nodejs.org/en">
     <img src="https://img.shields.io/badge/Node%20js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"/>
