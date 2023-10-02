@@ -460,7 +460,6 @@ async function init() {
     // Add an event listener to the "Update Data" button
     const updateDataButton = document.getElementById("updateDataButton");
     const addNewButton = document.getElementById("addNewButton");
-    const firstTopic = document.getElementById("firstTopic");
     updateDataButton.addEventListener("click", () => {
     const modifiedJSON = document.getElementById("mySavedModel").value;
     const searchInput = document.getElementById('searchInput').value;
@@ -503,22 +502,13 @@ async function init() {
         // console.log(`y : ${y}`)
         // setLatstTopic(y);
         document.getElementById("updateTopic").style.visibility = "hidden";
-        document.getElementById("firstTopic").style.visibility = "visible";
-        document.getElementById("topicEditor").style.visibility = "visible";
-    });
-    // update topic for latest one
-    firstTopic.addEventListener("click", ()=>{
-        const topicInput = document.getElementById('topicInput').value;
-        updateLatestTopic(topicInput);
     });
     document.getElementById('topicInput').addEventListener('input', function () {
         const topicInputValue = document.getElementById('topicInput').value;
         const updateTopicButton = document.getElementById('updateTopic');
-        const firstTopicButton = document.getElementById('firstTopic');
         // Check if the input value is not empty and enable/disable the button accordingly
         if (topicInputValue !== '') {
             updateTopicButton.removeAttribute('disabled');
-            firstTopicButton.removeAttribute('disabled');
         } else {
             updateTopicButton.setAttribute('disabled', 'true');
         }
@@ -659,6 +649,7 @@ function load(data) {
             getLatstOne();
             console.log('Data updated successfully.');
         } else {
+            window.alert('Database is not responding, please try again later');
             console.error('Failed to update data.');
         }
     } catch (error) {
