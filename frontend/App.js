@@ -38,37 +38,37 @@ async function init() {
                             setsPortSpot: false,
                             setsChildPortSpot: false
                         }),
-                        
+
                 "undoManager.isEnabled": true // enable undo & redo   
             });
-            let myTopic = await getSafetyCase();
-            let serTopic ;
-            let latestTopic ;
-            const setSerTopic = (x) =>{
-                serTopic = x;
-                topicTextB.findObject("topicTextBlock").text = serTopic;
-            }
-            const setLatstTopic = (y) =>{
-                console.log(`y: ${y}`);
-                latestTopic = y;
-                topicTextB.findObject("topicTextBlock").text = latestTopic;
-            }
-            let topicText = latestTopic != null ? latestTopic : (serTopic != null ? serTopic : myTopic);
-            const topicTextB =
+    let myTopic = await getSafetyCase();
+    let serTopic;
+    let latestTopic;
+    const setSerTopic = (x) => {
+        serTopic = x;
+        topicTextB.findObject("topicTextBlock").text = serTopic;
+    }
+    const setLatstTopic = (y) => {
+        console.log(`y: ${y}`);
+        latestTopic = y;
+        topicTextB.findObject("topicTextBlock").text = latestTopic;
+    }
+    let topicText = latestTopic != null ? latestTopic : (serTopic != null ? serTopic : myTopic);
+    const topicTextB =
         $(go.Part,
             { position: new go.Point(0, 0) },
             $(go.Panel, "Table", // Set the position as desired
-            $(go.TextBlock, "Topic: ", textStyle(),
-            { font: "30px Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 10 }),
-            $(go.TextBlock, topicText, { font: "30px Arial, Helvetica, sans-serif", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }),
+                $(go.TextBlock, "Topic: ", textStyle(),
+                    { font: "30px Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 10 }),
+                $(go.TextBlock, topicText, { font: "30px Arial, Helvetica, sans-serif", stroke: "black", row: 0, column: 1, name: "topicTextBlock" }),
             ));
-            myDiagram.add(topicTextB);
-            new go.Binding("text", topicText ).makeTwoWay();
-            // console.log(`out: ${serTopic}`);
-//  ******
+    myDiagram.add(topicTextB);
+    new go.Binding("text", topicText).makeTwoWay();
+    // console.log(`out: ${serTopic}`);
+    //  ******
     getSafetyCase();
     // Create a data object for the diagram's topic
-     const diagramData = {
+    const diagramData = {
         topic: "Your Topic Here", // Initial topic value
     };
     // Set up a binding between the topic and the TextBlock
@@ -92,10 +92,10 @@ async function init() {
     });
     const levelColors = ["#000000"];
     // override TreeLayout.commitNodes to also modify the background brush based on the tree depth level
-        myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
+    myDiagram.layout.commitNodes = function () {  // method override must be function, not =>
         go.TreeLayout.prototype.commitNodes.call(this);  // do the standard behavior
-    //     // then go through all of the vertexes and set their corresponding node's Shape.fill
-    //     // to a brush dependent on the TreeVertex.level value
+        //     // then go through all of the vertexes and set their corresponding node's Shape.fill
+        //     // to a brush dependent on the TreeVertex.level value
         myDiagram.layout.network.vertexes.each(v => {
             if (v.node) {
                 const level = v.level % (levelColors.length);
@@ -121,147 +121,148 @@ async function init() {
 
     // define the Node template
     myDiagram.nodeTemplate =
-    $(go.Node, "Spot",
-        {   selectionObjectName: "BODY",
-            mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
-            mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
-            // handle dragging a Node onto a Node to (maybe) change the reporting relationship
-            mouseDragEnter: (e, node, prev) => {
-                const diagram = node.diagram;
-                const selnode = diagram.selection.first();
-                if (!mayWorkFor(selnode, node)) return;
-                const shape = node.findObject("SHAPE");
-                if (shape) {
-                    shape._prevFill = shape.fill;  // remember the original brush
-                    shape.fill = "darkred";
-                }
-            },
-            mouseDragLeave: (e, node, next) => {
-                const shape = node.findObject("SHAPE");
-                if (shape && shape._prevFill) {
-                    shape.fill = shape._prevFill;  // restore the original brush
-                }
-            },
-            mouseDrop: (e, node) => {
-                const diagram = node.diagram;
-                const selnode = diagram.selection.first();  // assume just one Node in selection
-                if (mayWorkFor(selnode, node)) {
-                    // find any existing link into the selected node
-                    const link = selnode.findTreeParentLink();
-                    if (link !== null) {  // reconnect any existing link
-                        link.fromNode = node;
-                    } else {  // else create a new link
-                        diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
+        $(go.Node, "Spot",
+            {
+                selectionObjectName: "BODY",
+                mouseEnter: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 1,
+                mouseLeave: (e, node) => node.findObject("BUTTON").opacity = node.findObject("BUTTONX").opacity = 0,
+                // handle dragging a Node onto a Node to (maybe) change the reporting relationship
+                mouseDragEnter: (e, node, prev) => {
+                    const diagram = node.diagram;
+                    const selnode = diagram.selection.first();
+                    if (!mayWorkFor(selnode, node)) return;
+                    const shape = node.findObject("SHAPE");
+                    if (shape) {
+                        shape._prevFill = shape.fill;  // remember the original brush
+                        shape.fill = "darkred";
+                    }
+                },
+                mouseDragLeave: (e, node, next) => {
+                    const shape = node.findObject("SHAPE");
+                    if (shape && shape._prevFill) {
+                        shape.fill = shape._prevFill;  // restore the original brush
+                    }
+                },
+                mouseDrop: (e, node) => {
+                    const diagram = node.diagram;
+                    const selnode = diagram.selection.first();  // assume just one Node in selection
+                    if (mayWorkFor(selnode, node)) {
+                        // find any existing link into the selected node
+                        const link = selnode.findTreeParentLink();
+                        if (link !== null) {  // reconnect any existing link
+                            link.fromNode = node;
+                        } else {  // else create a new link
+                            diagram.toolManager.linkingTool.insertLink(node, node.port, selnode, selnode.port);
+                        }
                     }
                 }
-            }
-        },
-        // for sorting, have the Node.text be the data.name
-        new go.Binding("text", "type"),
-        // bind the Part.layerName to control the Node's layer depending on whether it isSelected
-        new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
-        $(go.Panel, "Auto",
-            { name: "BODY" },
-            // define the node's outer shape
-            $(go.Shape, "Rectangle",
-                { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 350, height: NaN },
-                // fullfill change color
-                // new go.Binding("fill", "fullfill", function(fullfill) {
-                //     return fullfill ? "lightgray" : "white";
-                // })
-                ),  
-            $(go.Panel, "Horizontal",
-                $(go.Panel, "Table",
-                    {
-                        minSize: new go.Size(200, NaN),
-                        maxSize: new go.Size(200, NaN),
-                        margin: new go.Margin(5, 2, 5, 2),
-                        defaultAlignment: go.Spot.Left,
-                    },
-                    $(go.RowColumnDefinition, { column: 2, width: 4}),
-                    $(go.TextBlock, textStyle(),
-                    { row: 0, column: 0, margin: 3 }),
-                    $(go.TextBlock, textStyle(),  // the name
-                        {
-                            name: "TYPETB",
-                            row: 0, column: 1, columnSpan: 1,
-                            font: "bold 20px Arial, Serif",
-                            editable: true, isMultiline: false,
-                            minSize: new go.Size(50, 16),
-                            margin:(0, 0, 5, 0),
-                        },
-                        new go.Binding("text", "type").makeTwoWay()),
-                    $(go.TextBlock, "Description: ", textStyle(),
-                        { row: 3, column: 0, margin:3, }),
-                    $(go.TextBlock, textStyle(),
-                        {
-                            row: 4, column: 0, columnSpan: 4,
-                            editable: true, isMultiline: false,
-                            minSize: new go.Size(50, 14),
-                            margin: new go.Margin(0, 0, 0, 3)
-                        },
-                        new go.Binding("text", "description").makeTwoWay()),
-                    $(go.TextBlock, textStyle(),
-                        { row: 1, column: 0, margin: 3 },
-                        new go.Binding("text", "key", v => "ID: " + v)),
-                    // $(go.TextBlock, textStyle(),
-                    //     { row: 2, column: 0, margin: 3 },
-                    //     new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
-                    $(go.TextBlock, textStyle(),  // the comments
-                        {
-                            row: 5, column: 0, columnSpan: 5,
-                            wrap: go.TextBlock.WrapFit,
-                            editable: true,  // by default newlines are allowed
-                            minSize: new go.Size(100, 14),
-                        },
-                        new go.Binding("text", "comments").makeTwoWay())
-                ) // end Table Panel
-            ) // end Horizontal Panel
-        ), // end Auto Panel
-        $("Button",
-            $(go.Shape, "PlusLine", { width: 10, height: 10 }),
-            {
-                name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
-                click: (e, button) => addEmployee(button.part)
             },
-            // button is visible either when node is selected or on mouse-over
-            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-        ),
-        new go.Binding("isTreeExpanded").makeTwoWay(),
-        $("TreeExpanderButton",
-            {
-                name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
-                "_treeExpandedFigure": "TriangleUp",
-                "_treeCollapsedFigure": "TriangleDown"
-            },
-            // button is visible either when node is selected or on mouse-over
-            new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
-        ),
-        // Bind fromSpot and toSpot to the linkDirection property
-        new go.Binding("fromSpot", "linkDirection", function (linkDirection) {
-            if (linkDirection === "Top") return go.Spot.Top;
-            if (linkDirection === "Bottom") return go.Spot.Bottom;
-            if (linkDirection === "Left") return go.Spot.Left;
-            if (linkDirection === "Right") return go.Spot.Right;
-            return go.Spot.Bottom;  // Default value
-        }),
-        new go.Binding("toSpot", "linkDirection", function (linkDirection) {
-            if (linkDirection === "Top") return go.Spot.Bottom;
-            if (linkDirection === "Bottom") return go.Spot.Top;
-            if (linkDirection === "Left") return go.Spot.Right;
-            if (linkDirection === "Right") return go.Spot.Left;
-            return go.Spot.Top;  // Default value
-        }),
-    ); // end Node, a Spot Panel
+            // for sorting, have the Node.text be the data.name
+            new go.Binding("text", "type"),
+            // bind the Part.layerName to control the Node's layer depending on whether it isSelected
+            new go.Binding("layerName", "isSelected", sel => sel ? "Foreground" : "").ofObject(),
+            $(go.Panel, "Auto",
+                { name: "BODY" },
+                // define the node's outer shape
+                $(go.Shape, "Rectangle",
+                    { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 350, height: NaN },
+                    // fullfill change color
+                    // new go.Binding("fill", "fullfill", function(fullfill) {
+                    //     return fullfill ? "lightgray" : "white";
+                    // })
+                ),
+                $(go.Panel, "Horizontal",
+                    $(go.Panel, "Table",
+                        {
+                            minSize: new go.Size(200, NaN),
+                            maxSize: new go.Size(200, NaN),
+                            margin: new go.Margin(5, 2, 5, 2),
+                            defaultAlignment: go.Spot.Left,
+                        },
+                        $(go.RowColumnDefinition, { column: 2, width: 4 }),
+                        $(go.TextBlock, textStyle(),
+                            { row: 0, column: 0, margin: 3 }),
+                        $(go.TextBlock, textStyle(),  // the name
+                            {
+                                name: "TYPETB",
+                                row: 0, column: 1, columnSpan: 1,
+                                font: "bold 20px Arial, Serif",
+                                editable: true, isMultiline: false,
+                                minSize: new go.Size(50, 16),
+                                margin: (0, 0, 5, 0),
+                            },
+                            new go.Binding("text", "type").makeTwoWay()),
+                        $(go.TextBlock, "Description: ", textStyle(),
+                            { row: 3, column: 0, margin: 3, }),
+                        $(go.TextBlock, textStyle(),
+                            {
+                                row: 4, column: 0, columnSpan: 4,
+                                editable: true, isMultiline: false,
+                                minSize: new go.Size(50, 14),
+                                margin: new go.Margin(0, 0, 0, 3)
+                            },
+                            new go.Binding("text", "description").makeTwoWay()),
+                        $(go.TextBlock, textStyle(),
+                            { row: 1, column: 0, margin: 3 },
+                            new go.Binding("text", "key", v => "ID: " + v)),
+                        // $(go.TextBlock, textStyle(),
+                        //     { row: 2, column: 0, margin: 3 },
+                        //     new go.Binding("text", "fullfill", f => "Fullfill: " + f)),
+                        $(go.TextBlock, textStyle(),  // the comments
+                            {
+                                row: 5, column: 0, columnSpan: 5,
+                                wrap: go.TextBlock.WrapFit,
+                                editable: true,  // by default newlines are allowed
+                                minSize: new go.Size(100, 14),
+                            },
+                            new go.Binding("text", "comments").makeTwoWay())
+                    ) // end Table Panel
+                ) // end Horizontal Panel
+            ), // end Auto Panel
+            $("Button",
+                $(go.Shape, "PlusLine", { width: 10, height: 10 }),
+                {
+                    name: "BUTTON", alignment: go.Spot.Right, opacity: 0,  // initially not visible
+                    click: (e, button) => addEmployee(button.part)
+                },
+                // button is visible either when node is selected or on mouse-over
+                new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+            ),
+            new go.Binding("isTreeExpanded").makeTwoWay(),
+            $("TreeExpanderButton",
+                {
+                    name: "BUTTONX", alignment: go.Spot.Bottom, opacity: 0,  // initially not visible
+                    "_treeExpandedFigure": "TriangleUp",
+                    "_treeCollapsedFigure": "TriangleDown"
+                },
+                // button is visible either when node is selected or on mouse-over
+                new go.Binding("opacity", "isSelected", s => s ? 1 : 0).ofObject()
+            ),
+            // Bind fromSpot and toSpot to the linkDirection property
+            new go.Binding("fromSpot", "linkDirection", function (linkDirection) {
+                if (linkDirection === "Top") return go.Spot.Top;
+                if (linkDirection === "Bottom") return go.Spot.Bottom;
+                if (linkDirection === "Left") return go.Spot.Left;
+                if (linkDirection === "Right") return go.Spot.Right;
+                return go.Spot.Bottom;  // Default value
+            }),
+            new go.Binding("toSpot", "linkDirection", function (linkDirection) {
+                if (linkDirection === "Top") return go.Spot.Bottom;
+                if (linkDirection === "Bottom") return go.Spot.Top;
+                if (linkDirection === "Left") return go.Spot.Right;
+                if (linkDirection === "Right") return go.Spot.Left;
+                return go.Spot.Top;  // Default value
+            }),
+        ); // end Node, a Spot Panel
     function addEmployee(node) {
         if (!node) return;
         const thisemp = node.data;
         myDiagram.startTransaction("Add Task");
         // When add a new node alert
-        const newType = window.prompt("Enter type for the new task (Please follow the format as provided) :  \nGoal (G) \nSubgoal \nstrategy (S) \nContext (C) \nSolution (Sn) \nJustification (J) \nAssumption (A)", 
-        "Goal, Subgoal, strategy, Context, Solution, Justification, Assumption");
+        const newType = window.prompt("Enter type for the new task (Please follow the format as provided) :  \nGoal (G) \nSubgoal \nstrategy (S) \nContext (C) \nSolution (Sn) \nJustification (J) \nAssumption (A)",
+            "Goal, Subgoal, strategy, Context, Solution, Justification, Assumption");
         if (newType !== null) {
-        const newemp = {
+            const newemp = {
                 type: newType,
                 comments: "",
                 parent: thisemp.key,
@@ -284,7 +285,7 @@ async function init() {
             setNodeShape(newnode);
             myDiagram.commandHandler.scrollToPart(newnode);
         };
-        
+
         myDiagram.commitTransaction("Add Task");
     };
 
@@ -309,7 +310,7 @@ async function init() {
                             // update the key, name, picture, and comments, but leave the title
                             myDiagram.model.setDataProperty(thisemp, "type", "(Vacant)");
                             // myDiagram.model.setDataProperty(thisemp, "pic", "");
-                            myDiagram.model.setDataProperty(thisemp, "comments", ""); 
+                            myDiagram.model.setDataProperty(thisemp, "comments", "");
                             myDiagram.commitTransaction("vacate");
                         }
                     }
@@ -358,131 +359,132 @@ async function init() {
             {
                 layerName: "Background",
                 routing: go.Link.AvoidsNodes,
-                corner: 10,  
-                toShortLength: 7,     
+                corner: 10,
+                toShortLength: 7,
             },
-            $(go.Shape, 
-            { 
-                strokeWidth: 5,
-            }),
-            $(go.Shape, { 
+            $(go.Shape,
+                {
+                    strokeWidth: 5,
+                }),
+            $(go.Shape, {
                 toArrow: "Standard",
                 fill: "yellow",
-                strokeWidth: 3, 
-                stroke: "black" 
+                strokeWidth: 3,
+                stroke: "black"
             }),
             new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
             new go.Binding("toSpot", "toSpot", go.Spot.parse),
             new go.Binding("fromSpot", "", function (data) {
-            if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
-                return go.Spot.Top;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
-                return go.Spot.Bottom;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
-                return go.Spot.Left;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
-                return go.Spot.Right;
-            } else {
-                return go.Spot.Bottom; // Default value
-            }
-        }),
-        new go.Binding("toSpot", "", function (data) {
-            if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
-                return go.Spot.Bottom;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
-                return go.Spot.Top;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
-                return go.Spot.Right;
-            } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
-                return go.Spot.Left;
-            } else {
-                return go.Spot.Top; // Default value
-            }
-        })        
+                if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
+                    return go.Spot.Top;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
+                    return go.Spot.Bottom;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
+                    return go.Spot.Left;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
+                    return go.Spot.Right;
+                } else {
+                    return go.Spot.Bottom; // Default value
+                }
+            }),
+            new go.Binding("toSpot", "", function (data) {
+                if (data.linkDirection && data.linkDirection.toLowerCase() === "top") {
+                    return go.Spot.Bottom;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "bottom") {
+                    return go.Spot.Top;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "left") {
+                    return go.Spot.Right;
+                } else if (data.linkDirection && data.linkDirection.toLowerCase() === "right") {
+                    return go.Spot.Left;
+                } else {
+                    return go.Spot.Top; // Default value
+                }
+            })
         );  // the link shape
 
     // support editing the properties of the selected person in HTML
     if (window.Inspector) myInspector = new Inspector("myInspector", myDiagram,
-    {
-        properties: {
-        "_id": { readOnly: true, show: false },
-        "key": { readOnly: true },
-        "type": {}, 
-        "description": {}, 
-        "comments": {},
-        "fullfill": { type: "select", choices: ["true", "false"], show: false },
-        "pic": {show: false},
-        "linkDirection": {
-            type: "select",
-            choices: ["top", "bottom", "left", "right"],
-        },
-    }}
+        {
+            properties: {
+                "_id": { readOnly: true, show: false },
+                "key": { readOnly: true },
+                "type": {},
+                "description": {},
+                "comments": {},
+                "fullfill": { type: "select", choices: ["true", "false"], show: false },
+                "pic": { show: false },
+                "linkDirection": {
+                    type: "select",
+                    choices: ["top", "bottom", "left", "right"],
+                },
+            }
+        }
     );
-  
+
     // Setup zoom to fit button
     document.getElementById('zoomToFit').addEventListener('click', () => myDiagram.commandHandler.zoomToFit());
     document.getElementById('centerRoot').addEventListener('click', () => {
         myDiagram.scale = 1;
         myDiagram.commandHandler.scrollToPart(myDiagram.findNodeForKey(1));
-        
+
     });
 
     // Update the link direction when the user changes it in the inspector
     myInspector._updateTarget = function (id, value) {
         let diagram = myDiagram;
-    diagram.startTransaction("updateLinkDirection");
-    let selectedNode = diagram.selection.first();
-    if (selectedNode && id === "linkDirection") {
-        // Update the link direction property of the selected node
-        selectedNode.data.linkDirection = value;
-        // Update fromSpot and toSpot based on the linkDirection
-        if (value === "top") {
-            selectedNode.data.fromSpot = go.Spot.Top;
-            selectedNode.data.toSpot = go.Spot.Bottom;
-        } else if (value === "bottom") {
-            selectedNode.data.fromSpot = go.Spot.Bottom;
-            selectedNode.data.toSpot = go.Spot.Top;
-        } else if (value === "left") {
-            selectedNode.data.fromSpot = go.Spot.Left;
-            selectedNode.data.toSpot = go.Spot.Right;
-        } else if (value === "right") {
-            selectedNode.data.fromSpot = go.Spot.Right;
-            selectedNode.data.toSpot = go.Spot.Left;
-        } else {
-            // Set default values here if needed
+        diagram.startTransaction("updateLinkDirection");
+        let selectedNode = diagram.selection.first();
+        if (selectedNode && id === "linkDirection") {
+            // Update the link direction property of the selected node
+            selectedNode.data.linkDirection = value;
+            // Update fromSpot and toSpot based on the linkDirection
+            if (value === "top") {
+                selectedNode.data.fromSpot = go.Spot.Top;
+                selectedNode.data.toSpot = go.Spot.Bottom;
+            } else if (value === "bottom") {
+                selectedNode.data.fromSpot = go.Spot.Bottom;
+                selectedNode.data.toSpot = go.Spot.Top;
+            } else if (value === "left") {
+                selectedNode.data.fromSpot = go.Spot.Left;
+                selectedNode.data.toSpot = go.Spot.Right;
+            } else if (value === "right") {
+                selectedNode.data.fromSpot = go.Spot.Right;
+                selectedNode.data.toSpot = go.Spot.Left;
+            } else {
+                // Set default values here if needed
+            }
+            diagram.commitTransaction("updateLinkDirection");
+            // After updating the property, update the diagram to reflect the changes
+            diagram.updateAllTargetBindings(selectedNode);
         }
-        diagram.commitTransaction("updateLinkDirection");
-        // After updating the property, update the diagram to reflect the changes
-        diagram.updateAllTargetBindings(selectedNode);
-    }
     };
 
     // Add an event listener to the "Update Data" button
     const updateDataButton = document.getElementById("updateDataButton");
     const addNewButton = document.getElementById("addNewButton");
     updateDataButton.addEventListener("click", () => {
-    const modifiedJSON = document.getElementById("mySavedModel").value;
-    const searchInput = document.getElementById('searchInput').value;
-    updateDatabase(modifiedJSON, searchInput);
+        const modifiedJSON = document.getElementById("mySavedModel").value;
+        const searchInput = document.getElementById('searchInput').value;
+        updateDatabase(modifiedJSON, searchInput);
     });
     // Enable the button when you have modifiedJSON
     function enableUpdateButton() {
-    addNewButton.removeAttribute("disabled")
-    updateDataButton.removeAttribute("disabled");
+        addNewButton.removeAttribute("disabled")
+        updateDataButton.removeAttribute("disabled");
     };
     function disableUpdateButton() {
-    updateDataButton.setAttribute("disabled", "true");
+        updateDataButton.setAttribute("disabled", "true");
     };
     document.getElementById('saveButton').addEventListener('click', () => enableUpdateButton());
     document.getElementById('updateDataButton').addEventListener('click', () => disableUpdateButton());
     // update topic
-    document.getElementById('updateTopic').addEventListener('click', () =>{
+    document.getElementById('updateTopic').addEventListener('click', () => {
         const topicInput = document.getElementById('topicInput').value;
         const searchInput = document.getElementById('searchInput').value;
         updateTopic(topicInput, searchInput);
     });
     // search topic
-    document.getElementById('searchTopic').addEventListener('click', async() =>{
+    document.getElementById('searchTopic').addEventListener('click', async () => {
         const searchInput = document.getElementById('searchInput').value;
         updateDataButton.style.visibility = "visible";
         searchTopic(searchInput);
@@ -492,7 +494,7 @@ async function init() {
         setSerTopic(x);
     });
     // add new safety case
-    addNewButton.addEventListener("click", async() => {
+    addNewButton.addEventListener("click", async () => {
         const modifiedJSON = document.getElementById("mySavedModel").value;
         addNewSC(modifiedJSON);
         // window.alert('Please Change the topic');
@@ -539,7 +541,7 @@ async function init() {
             }
         });
     });
-    
+
     // save as image
     document.getElementById("blobButton").addEventListener("click", makeBlob);
     // save as JSON
@@ -547,16 +549,16 @@ async function init() {
 } // end init
 
 //fetch Data ------
- const getSafetyCase = async() => { 
-    try{ 
-    const res = await document.getElementById("mySavedModel").value;
-    const data = await JSON.parse(res); 
-    load(data);
-    const newTopic =data.data.topic;
-    myTopic = newTopic;
-    return myTopic
-    } catch(error){
-    console.log(error)
+const getSafetyCase = async () => {
+    try {
+        const res = await document.getElementById("mySavedModel").value;
+        const data = await JSON.parse(res);
+        load(data);
+        const newTopic = data.data.topic;
+        myTopic = newTopic;
+        return myTopic
+    } catch (error) {
+        console.log(error)
     }
 };
 // Add a custom function to set the shape based on the "type" property
@@ -581,7 +583,7 @@ function setNodeShape(node) {
             // shape.fill = "lightgreen";
         };
     };
-// Set the fromSpot and toSpot based on linkDirection property
+    // Set the fromSpot and toSpot based on linkDirection property
     const linkDirection = node.data.linkDirection;
     if (linkDirection) {
         if (linkDirection === "top") {
@@ -598,13 +600,13 @@ function setNodeShape(node) {
             node.toSpot = go.Spot.Left;
         }
     }
-        if (linkDirection) {
-            if (linkDirection === "left" || linkDirection === "right") {
-                // Adjust the alignment for "left" and "right" links
-                node.alignment = new go.Spot(0.5, 0.5);
-            }
+    if (linkDirection) {
+        if (linkDirection === "left" || linkDirection === "right") {
+            // Adjust the alignment for "left" and "right" links
+            node.alignment = new go.Spot(0.5, 0.5);
         }
     }
+}
 
 
 function save() {
@@ -619,7 +621,7 @@ function load(data) {
         treeModel.nodeDataArray = modelData;
         myDiagram.model = treeModel;
         // Call setNodeShape for each node in the diagram to set the shapes correctly
-        myDiagram.nodes.each(node => {setNodeShape(node); myDiagram.updateAllTargetBindings(node);});
+        myDiagram.nodes.each(node => { setNodeShape(node); myDiagram.updateAllTargetBindings(node); });
         let lastkey = 1;
         myDiagram.model.makeUniqueKeyFunction = (model, modelData) => {
             let k = modelData.key || lastkey;
@@ -632,13 +634,13 @@ function load(data) {
     }
 };
 // Add a new safety case
- const addNewSC = async(modifiedJSON) =>{
+const addNewSC = async (modifiedJSON) => {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
     // console.log(`POST: ${finalModifiedJson}`);
     try {
-        const response = await fetch('https://webgsn-backend.onrender.com/safetycase', {
+        const response = await fetch('http://localhost:5000/safetycases', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -657,27 +659,27 @@ function load(data) {
     }
 };
 // search a safety case
-const searchTopic = async(searchInput) => { 
-    if(searchInput)
-    try{ 
-        const response = await fetch(`https://webgsn-backend.onrender.com/safetycase/topic/${searchInput}`);
-        const data = await response.json();
-        const newTopic = data.data.topic;
-        serTopic = newTopic
-        load(data);
-        // console.log(`newTopic: ${newTopic}`);
-        // console.log(`serTopic: ${serTopic}`);
-        if (data) document.getElementById("topicEditor").style.visibility = "visible";
-        return serTopic
-    } catch (error) {
-        window.alert("No such safety case exist")
-        console.error("Error searching for safety case:", error);
-    }
+const searchTopic = async (searchInput) => {
+    if (searchInput)
+        try {
+            const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`);
+            const data = await response.json();
+            const newTopic = data.data.topic;
+            serTopic = newTopic
+            load(data);
+            // console.log(`newTopic: ${newTopic}`);
+            // console.log(`serTopic: ${serTopic}`);
+            if (data) document.getElementById("topicEditor").style.visibility = "visible";
+            return serTopic
+        } catch (error) {
+            window.alert("No such safety case exist")
+            console.error("Error searching for safety case:", error);
+        }
 };
 // get latest one
-const getLatstOne = async() => { 
-    try{ 
-        const response = await fetch('https://webgsn-backend.onrender.com/safetycase/latest');
+const getLatstOne = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/safetycases/latest');
         const data = await response.json();
         // console.log(JSON.stringify(data, null, 2));
         // console.log(`data: ${data.data[0].topic}`);
@@ -694,14 +696,14 @@ const getLatstOne = async() => {
 };
 
 // update from edit
- const  updateDatabase = async(modifiedJSON, searchInput) => {
+const updateDatabase = async (modifiedJSON, searchInput) => {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
     console.log(`searchInput: ${searchInput}`);
     console.log(`PUT: ${finalModifiedJson}`);
     try {
-        const response = await fetch(`https://webgsn-backend.onrender.com/safetycase/topic/${searchInput}`, {
+        const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -729,22 +731,22 @@ function myCallback(blob) {
     a.download = filename;
     // IE 11
     if (window.navigator.msSaveBlob !== undefined) {
-      window.navigator.msSaveBlob(blob, filename);
-      return;
+        window.navigator.msSaveBlob(blob, filename);
+        return;
     }
     document.body.appendChild(a);
     requestAnimationFrame(() => {
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
     });
-  }
-  function makeBlob() {
+}
+function makeBlob() {
     var blob = myDiagram.makeImageData({ background: "white", returnType: "blob", callback: myCallback });
-  };
+};
 
-  //save JSON
-  function downloadJson() {
+//save JSON
+function downloadJson() {
     // Get the JSON data from the mySavedModel textarea
     const jsonData = document.getElementById("mySavedModel").value;
     // Create a Blob with the JSON data
@@ -759,17 +761,17 @@ function myCallback(blob) {
     URL.revokeObjectURL(a.href);
 };
 
-  // update topic
-  async function updateTopic(newTopic, searchInput) {
+// update topic
+async function updateTopic(newTopic, searchInput) {
     try {
-        const res = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${newTopic}`);
+        const res = await fetch(`http://localhost:5000/safetycases/topic/${newTopic}`);
         const topicData = await res.json();
         const existingTopic = topicData.data.topic;
         console.log(`existingTopic: ${existingTopic}`);
-        window.alert('This Topic is already exist please choose another');     
+        window.alert('This Topic is already exist please choose another');
     } catch (error) {
         const data = { newTopic: newTopic };
-        const response = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${searchInput}`, {
+        const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -785,24 +787,24 @@ function myCallback(blob) {
         console.error('Error updating the topic in the database:', error);
     };
 };
-  // update latest topic
-  async function updateLatestTopic(firstNewTopic) {
+// update latest topic
+async function updateLatestTopic(firstNewTopic) {
     try {
-        const res = await fetch(`https://webgsn-backend.onrender.com/safetycases/topic/${firstNewTopic}`);
+        const res = await fetch(`http://localhost:5000/safetycases/topic/${firstNewTopic}`);
         const topicData = await res.json();
         const existingTopic = topicData.data.topic;
         console.log(`existingTopic: ${existingTopic}`);
-        window.alert('This Topic is already exist please choose another');   
+        window.alert('This Topic is already exist please choose another');
         location.reload();
     } catch (error) {
         const data = { newTopic: firstNewTopic };
-        const response = await fetch(`https://webgsn-backend.onrender.com/safetycases/latest`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    });
+        const response = await fetch(`http://localhost:5000/safetycases/latest`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
         console.log('Topic updated successfully in the database.');
         location.reload();
         console.error('Error updating the topic in the database:', error);
@@ -810,7 +812,7 @@ function myCallback(blob) {
 };
 
 // topicPrompt
-const promptMe = ()=>{
+const promptMe = () => {
     const firstNewTopic = window.prompt('Please Change the topic');
     updateLatestTopic(firstNewTopic);
     console.log(`firstNewTopic: ${firstNewTopic}`);
