@@ -68,9 +68,8 @@ The following instructions provide an overview in terms of how to create an assu
   * For example, enter "My_Safety_Case"
 5. To add a new node, simply double-click the background.
 6. This new node has a long type **(Goal, Subgoal, Strategy, Context, Solution, Justification, Assumption)**, please double click on the string, and manually change it to **Goal**. 
-11. Hover to an existing node, ` + ` would show up, click to add a new node below. 
-12. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, a node will change its shape
- The format is provided :
+7. Hover to an existing node, ` + ` would show up, click to add a new node below. 
+8. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, a node will change its shape. The following formats are provided :
    * Goal (G)  → Rectangle
    * Subgoal → Rectangle
    * strategy (S) → Parallelogram
@@ -78,17 +77,18 @@ The following instructions provide an overview in terms of how to create an assu
    * Solution (Sn) → Circle
    * Justification (J) → Ellipse
    * Assumption (A) → Ellipse
-13. To edit the details of a node, click on the node, and scroll down to **Details**. The input field would show up for you to edit.
+9. To edit the details of a node, click on the node, and scroll down to **Details**. The input field would show up for you to edit.
   * **Description** explain the purpose of this node.
   * **Comments** is an optional input for more information, if it’s needed.
   * **linkDirection** decides which direction you wish the node to connect to its parent. 
   * **Parent** references the id number of the node one above your current node. This is generated automatically
-17. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
-18. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
-19. Adjust where those nodes and the **Topic** should be located by Dragging it.
-20. If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
-21. By clicking ` ▲ ` to collapse the diagram.
-22. By clicking ` ▼ ` to expand the diagram.
-23. Press `Zoom to Fit` or `Center on root`, to include the whole diagram in image before download.
-24. Please click `Download Image` to download the image.
+10. To save changes, first press `Update JSON`, then press  `Save Changes`. 
+
+### Additional features such as downloading the JSON file, the safety case image
+* Adjust where those nodes and the **Topic** should be located by Dragging it.
+* If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
+* By clicking ` ▲ `, one can collapse the diagram.
+* By clicking ` ▼ `, one can expand the diagram.
+* Press `Zoom to Fit` or `Center on root`, to include the whole diagram in the image before downloading.
+* Please click `Download Image` to download the image.
 25. Please click `Download JSON` to download the JSON file.
