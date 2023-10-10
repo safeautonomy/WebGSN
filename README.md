@@ -85,10 +85,10 @@ The following instructions provide an overview in terms of how to create an assu
 10. To save changes, first press `Update JSON`, then press  `Save Changes`. 
 
 ### Additional features such as downloading the JSON file, the safety case image
-* Adjust where those nodes and the **Topic** should be located by Dragging it.
+* One can relocate the location of nodes to beautify the layout. 
 * If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
 * By clicking ` ▲ `, one can collapse the diagram.
 * By clicking ` ▼ `, one can expand the diagram.
 * Press `Zoom to Fit` or `Center on root`, to include the whole diagram in the image before downloading.
-* Please click `Download Image` to download the image.
-25. Please click `Download JSON` to download the JSON file.
+* Click `Download Image` to download the safety case.
+* Click `Download JSON` to download the safety case as the JSON file.
