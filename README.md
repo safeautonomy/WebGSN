@@ -62,7 +62,7 @@ npm run dev
 
 * It's a template. Please edit the nodes and create a new safety case!
 
-1. Right-click to select an action. (add node, delete node…etc.)
+1. Right-click to select an action (e.g., add node, delete node).
 2. Use `Delete node` to delete a single node; `Delete Tree` is to delete all nodes below the node you’ve selected.
 3. After the deletion, first scroll down and press `Update JSON` and then press `Create Safety Case` button to create your own safety case.
 4. After the new tree model is successfully added, You’ll be asked to change the **Topic** where the input field appears. Enter your new topic and click `Change Topic`.
