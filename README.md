@@ -28,7 +28,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 
 ### Instruction of Installation - on local machine
 
-* To run this application, **Node.js**, **NPM** package manager are needed. (if you have already installed it, please go directly to STEP 2.)
+* To run this application, **Node.js**, **NPM** package manager are needed (if you have already installed it, please go directly to STEP 2).
 
 1. Install Node.js & NPM with the following command line. (on Terminal) ※Take Linux as example.
 ```
@@ -36,14 +36,14 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
  $ sudo apt install npm
 ```
 2. Clone the repository from  [https://github.com/safeautonomy/WebGSN](https://github.com/safeautonomy/WebGSN)
-3. Use VScode to open the **WebGSN-main** folder. (When using VSCode, please also install **LiveServer** as an addon)
+3. Use VScode to open the **WebGSN-main** folder (when using VSCode, please also install **LiveServer** as an addon).
 4. Create a new `.env` file in the **backend** folder.
 5. Go to  [https://www.mongodb.com/](https://www.mongodb.com/) set up a database. ([How to set up a NoSQL database on MongoDB](https://docs.google.com/document/d/11Wooh6Nf2jHi10lps3vu3Pq9hC1Gk0q6F0uIBte0Uj8/edit?usp=drive_link))
 6. Paste the following text in `.env` file and don’t forget to save.
 ```
 MONGO_URI = URI WHICH YOU GET FROM MONGODB
 ```
-7. In VScode, open two terminal, you could achieve that by clicking ` ◫ ` .
+7. In VScode, open two terminals; you could achieve that by clicking ` ◫ `.
 8. On one terminal, change the directory to **WebGSN-main/frontend** and install all dependencies.
 ```
 npm i
@@ -63,11 +63,11 @@ npm run dev
 * It's a template. Please edit the nodes and create a new safety case!
 
 1. Right-click to select an action. (add node, delete node…etc.)
-2. `Delete node` delete a single node, `Delete Tree` is to delete all nodes below the node you’ve selected.
-3. After the Delete, first scroll down and press `Update JSON` and then press `Create Safety Case` button to create your own safety case..
-4. After the new treemodel is successfully added, You’d be asked to change the **Topic**, input field would show up, type in new topic and click `Change Topic`.
+2. Use `Delete node` to delete a single node; `Delete Tree` is to delete all nodes below the node you’ve selected.
+3. After the deletion, first scroll down and press `Update JSON` and then press `Create Safety Case` button to create your own safety case.
+4. After the new tree model is successfully added, You’ll be asked to change the **Topic** where the input field appears. Enter your new topic and click `Change Topic`.
 5. When you see the page reload back to the template, please search your safety case by typing the **Topic** in the search bar (on the top of the website). 
-6. To add a new node outside of treemodel, by double clicking the background.
+6. To add a new node outside of tree model, simply double-click the background.
 7. Hover to an existing node, ` + ` would show up, click to add a new node below. 
 8. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, node would be shaped into different notation.
  The format is provided :
