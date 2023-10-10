@@ -79,10 +79,10 @@ The following instructions provide an overview in terms of how to create an assu
    * Justification (J) → Ellipse
    * Assumption (A) → Ellipse
 13. To edit the details of a node, click on the node, and scroll down to **Details**. The input field would show up for you to edit.
-13. **Description** explain the task or the purpose of this node.
-14. **Comments** is an optional input for more information, if it’s needed.
-15. **linkDirection** decides which direction you wish the node to connect to its parent.
-16. **Parent** references the id number of the node one above your current node.
+  * **Description** explain the purpose of this node.
+  * **Comments** is an optional input for more information, if it’s needed.
+  * **linkDirection** decides which direction you wish the node to connect to its parent. 
+  * **Parent** references the id number of the node one above your current node. This is generated automatically
 17. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
 18. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
 19. Adjust where those nodes and the **Topic** should be located by Dragging it.
