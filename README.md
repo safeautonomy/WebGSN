@@ -2,8 +2,6 @@
 
 A web-based tool for viewing and modifying assurance arguments in Goal-Structured-Notation (GSN), with capabilities to store the assurance argument as a local file or into a database
 
-[Try out WebGSN without installation](https://webgsn.netlify.app/)
-
 [How to use WebGSN](https://www.youtube.com/watch?v=CIrv9jM2jyo)
 
 <div id="badges" align="center">
@@ -26,7 +24,7 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
   <img src="https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white">
 </div>
 
-### Instruction of Installation - on local machine
+### Instruction of installation - on the local machine
 
 * To run this application, **Node.js**, **NPM** package manager are needed (if you have already installed it, please go directly to STEP 2).
 
@@ -60,16 +58,18 @@ npm run dev
 
 ### How to use WebGSN - on the browser
 
-* It's a template. Please edit the nodes and create a new safety case!
+The following instructions provide an overview in terms of how to create an assurance argument from scratch. 
 
-1. Right-click to select an action (e.g., add node, delete node).
-2. Use `Delete node` to delete a single node; `Delete Tree` is to delete all nodes below the node you’ve selected.
-3. After the deletion, first scroll down and press `Update JSON` and then press `Create Safety Case` button to create your own safety case.
-4. After the new tree model is successfully added, You’ll be asked to change the **Topic** where the input field appears. Enter your new topic and click `Change Topic`.
-5. When you see the page reload back to the template, please search your safety case by typing the **Topic** in the search bar (on the top of the website). 
-6. To add a new node outside of tree model, simply double-click the background.
-7. Hover to an existing node, ` + ` would show up, click to add a new node below. 
-8. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, node would be shaped into different notation.
+1. Right-click on the root node of the tree (G1).
+2. Among four options to be chosen, select `Remove tree`, which enables removing the selected node and its subtrees.
+3. Scroll down and press `Update JSON`, and then press `Create Safety Case` button to create your own safety case.
+  * There shall be a pop-up window, asking for a topic of your safety case. For example, enter "My_Safety_Case"
+4. When you see the page reload back to the template, please search your safety case by typing the **Topic** in the search bar (on the top of the website), then an empty canvas will pop out. 
+  * For example, enter "My_Safety_Case"
+5. To add a new node, simply double-click the background.
+6. This new node has a long type **(Goal, Subgoal, Strategy, Context, Solution, Justification, Assumption)**, please double click on the string, and manually change it to **Goal**. 
+11. Hover to an existing node, ` + ` would show up, click to add a new node below. 
+12. After pressing ` + `, you would be asked to define the type of the node, By changing **Type**, a node will change its shape
  The format is provided :
    * Goal (G)  → Rectangle
    * Subgoal → Rectangle
@@ -78,18 +78,17 @@ npm run dev
    * Solution (Sn) → Circle
    * Justification (J) → Ellipse
    * Assumption (A) → Ellipse
-10. By selecting a node to edit details.
-11. Scroll down to **Details**, input field would show up for you to edit.
-12. **Description** explain the task or the purpose of this node.
-13. **Comments** is an optional input for more information, if it’s needed.
-14. **linkDirection** decides which direction you wish the node to connect to its parent.
-15. **Parent** references the id number of the node one above your current node.
-16. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
-17. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
-18. Adjust where those nodes and the **Topic** should be located by Dragging it.
-19. If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
-20. By clicking ` ▲ ` to collapse the diagram.
-21. By clicking ` ▼ ` to expand the diagram.
-22. Press `Zoom to Fit` or `Center on root`, to include the whole diagram in image before download.
-23. Please click `Download Image` to download the image.
-24. Please click `Download JSON` to download the JSON file.
+13. To edit the details of a node, click on the node, and scroll down to **Details**. The input field would show up for you to edit.
+13. **Description** explain the task or the purpose of this node.
+14. **Comments** is an optional input for more information, if it’s needed.
+15. **linkDirection** decides which direction you wish the node to connect to its parent.
+16. **Parent** references the id number of the node one above your current node.
+17. `Update JSON` button is always needed to be clicked before `Create Safety Case` or `Save Changes`. 
+18. To edit, please follow step 9. - 15. and then click `Save Changes` button, so you won't lose the changes.
+19. Adjust where those nodes and the **Topic** should be located by Dragging it.
+20. If you want to switch a node and its child nodes under another parent node, simply by dragging it to the parent node until the parent turns red and release. 
+21. By clicking ` ▲ ` to collapse the diagram.
+22. By clicking ` ▼ ` to expand the diagram.
+23. Press `Zoom to Fit` or `Center on root`, to include the whole diagram in image before download.
+24. Please click `Download Image` to download the image.
+25. Please click `Download JSON` to download the JSON file.
