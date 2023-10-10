@@ -1,6 +1,6 @@
 # WebGSN
 
-A web-based tool for viewing and modifying assurance arguments in Goal-Structured-Notation (GSN), with capabilities to store as a local file or into a database
+A web-based tool for viewing and modifying assurance arguments in Goal-Structured-Notation (GSN), with capabilities to store the assurance argument as a local file or into a database
 
 [Try out WebGSN without installation](https://webgsn.netlify.app/)
 
@@ -43,26 +43,26 @@ A web-based tool for viewing and modifying assurance arguments in Goal-Structure
 ```
 MONGO_URI = URI WHICH YOU GET FROM MONGODB
 ```
-7. In VScode Open two terminal, you could achieve that by clicking ` ◫ ` .
-8. On one terminal change the directory to **WebGSN-main/frontend** and install all dependencies.
+7. In VScode, open two terminal, you could achieve that by clicking ` ◫ ` .
+8. On one terminal, change the directory to **WebGSN-main/frontend** and install all dependencies.
 ```
 npm i
 ```
-9. On the other terminal change the directory to **WebGSN-main/backend** and install all dependencies.
+9. On the other terminal, change the directory to **WebGSN-main/backend** and install all dependencies.
 ```
 npm i
 ```
-  And then to run the backend with the following command.
+  Then, run the backend with the following command.
 ```
 npm run dev
 ```
 10. Trigger the web server. (in VSCode, click on **“Go Live”** at the bottom right)
 
-### How to use WebGSN - on browser
+### How to use WebGSN - on the browser
 
 * It's a template. Please edit the nodes and create a new safety case!
 
-1. Right click to select an action. (add node, delete node…etc.)
+1. Right-click to select an action. (add node, delete node…etc.)
 2. `Delete node` delete a single node, `Delete Tree` is to delete all nodes below the node you’ve selected.
 3. After the Delete, first scroll down and press `Update JSON` and then press `Create Safety Case` button to create your own safety case..
 4. After the new treemodel is successfully added, You’d be asked to change the **Topic**, input field would show up, type in new topic and click `Change Topic`.
