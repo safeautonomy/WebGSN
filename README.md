@@ -92,3 +92,7 @@ The following instructions provide an overview in terms of how to create an assu
 * Press `Zoom to Fit` or `Center on root`, to include the whole diagram in the image before downloading.
 * Click `Download Image` to download the safety case.
 * Click `Download JSON` to download the safety case as the JSON file.
+
+### Remove the safety case
+
+As the safety case is stored in MongoDB, one can simply browse the database and delete your created safety case. 
