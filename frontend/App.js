@@ -730,6 +730,7 @@ const updateDatabase = async (modifiedJSON, searchInput, serTopic) => {
         });
         if (response.ok) {
             // console.log('Data updated successfully.');
+            window.alert('Data updated successfully.');
             // location.reload();
         } else {
             console.error('Failed to update data.');
