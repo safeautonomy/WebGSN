@@ -9,7 +9,7 @@ async function init() {
                 maxSelectionCount: 1, // users can select only one part at a time
                 validCycle: go.Diagram.CycleDestinationTree, // make sure users can only create trees
                 "clickCreatingTool.archetypeNodeData": { // allow double-click in background to create a new node
-                    type: "(Goal, Subgoal, strategy, Context, Solution, Justification, Assumption)",
+                    type: "",
                     description: "",
                     comments: ""
                 },
@@ -47,7 +47,7 @@ async function init() {
     const setSerTopic = (x) => {
         serTopic = x;
         topicTextB.findObject("topicTextBlock").text = serTopic;
-    }
+    };
     const setLatstTopic = (y) => {
         console.log(`y: ${y}`);
         latestTopic = y;
@@ -56,7 +56,7 @@ async function init() {
     let topicText = latestTopic != null ? latestTopic : (serTopic != null ? serTopic : myTopic);
     const topicTextB =
         $(go.Part,
-            { position: new go.Point(0, 0) },
+            { position: new go.Point(0, 0),},
             $(go.Panel, "Table", // Set the position as desired
                 $(go.TextBlock, "Topic: ", textStyle(),
                     { font: "30px Arial, Helvetica, sans-serif", row: 0, column: 0, margin: 10 }),
@@ -116,7 +116,7 @@ async function init() {
     // This function provides a common style for most of the TextBlocks.
     // Some of these values may be overridden in a particular TextBlock.
     function textStyle() {
-        return { font: "12pt  'Arial, Helvetica, sans-serif", stroke: "black", spacingAbove: 3, spacingBelow: 3 };
+        return { font: "14pt  'Arial, Helvetica, sans-serif", stroke: "black", spacingAbove: 3, spacingBelow: 3 };
     };
 
     // define the Node template
@@ -165,7 +165,7 @@ async function init() {
                 { name: "BODY" },
                 // define the node's outer shape
                 $(go.Shape, "Rectangle",
-                    { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 350, height: NaN },
+                    { name: "SHAPE", fill: "#ffffff", stroke: 'white', strokeWidth: 5, portId: "", width: 500, height: NaN },
                     // fullfill change color
                     // new go.Binding("fill", "fullfill", function(fullfill) {
                     //     return fullfill ? "lightgray" : "white";
@@ -174,12 +174,12 @@ async function init() {
                 $(go.Panel, "Horizontal",
                     $(go.Panel, "Table",
                         {
-                            minSize: new go.Size(200, NaN),
-                            maxSize: new go.Size(200, NaN),
-                            margin: new go.Margin(5, 2, 5, 2),
+                            minSize: new go.Size(300, NaN),
+                            maxSize: new go.Size(450, NaN),
+                            // margin: new go.Margin(5, 2, 5, 2),
                             defaultAlignment: go.Spot.Left,
                         },
-                        $(go.RowColumnDefinition, { column: 2, width: 4 }),
+                        $(go.RowColumnDefinition, { column: 3, width: 4 }),
                         $(go.TextBlock, textStyle(),
                             { row: 0, column: 0, margin: 3 }),
                         $(go.TextBlock, textStyle(),  // the name
@@ -193,17 +193,18 @@ async function init() {
                             },
                             new go.Binding("text", "type").makeTwoWay()),
                         $(go.TextBlock, "Description: ", textStyle(),
-                            { row: 3, column: 0, margin: 3, }),
+                            { row: 3, column: 0, margin: 20,}),
                         $(go.TextBlock, textStyle(),
                             {
-                                row: 4, column: 0, columnSpan: 4,
-                                editable: true, isMultiline: false,
-                                minSize: new go.Size(50, 14),
-                                margin: new go.Margin(0, 0, 0, 3)
+                                row: 3, column: 1, columnSpan: 10,
+                                editable: true, isMultiline: true,
+                                maxSize: new go.Size(150, 200),
+                                // margin: new go.Margin(3, 3, 3, 3),
+                                wrap: go.TextBlock.WrapFit,
                             },
                             new go.Binding("text", "description").makeTwoWay()),
                         $(go.TextBlock, textStyle(),
-                            { row: 1, column: 0, margin: 3 },
+                            { row: 1, column: 0, margin: 20 },
                             new go.Binding("text", "key", v => "ID: " + v)),
                         // $(go.TextBlock, textStyle(),
                         //     { row: 2, column: 0, margin: 3 },
@@ -259,8 +260,7 @@ async function init() {
         const thisemp = node.data;
         myDiagram.startTransaction("Add Task");
         // When add a new node alert
-        const newType = window.prompt("Enter type for the new task (Please follow the format as provided) :  \nGoal (G) \nSubgoal \nstrategy (S) \nContext (C) \nSolution (Sn) \nJustification (J) \nAssumption (A)",
-            "Goal, Subgoal, strategy, Context, Solution, Justification, Assumption");
+        const newType = window.prompt("Enter type for the new task (Please follow the format as provided) :  \nGoal or G \nSubgoal or Sg \nStrategy or S \nContext or C \nSolution or Sn \nJustification or J \nAssumption or A");
         if (newType !== null) {
             const newemp = {
                 type: newType,
@@ -300,7 +300,7 @@ async function init() {
                 }
             ),
             $("ContextMenuButton",
-                $(go.TextBlock, "Vacate Node"),
+                $(go.TextBlock, "Empty Node"),
                 {
                     click: (e, button) => {
                         const node = button.part.adornedPart;
@@ -465,7 +465,7 @@ async function init() {
     updateDataButton.addEventListener("click", () => {
         const modifiedJSON = document.getElementById("mySavedModel").value;
         const searchInput = document.getElementById('searchInput').value;
-        updateDatabase(modifiedJSON, searchInput);
+        updateDatabase(modifiedJSON, searchInput, serTopic); // ++++
     });
     // Enable the button when you have modifiedJSON
     function enableUpdateButton() {
@@ -481,7 +481,10 @@ async function init() {
     document.getElementById('updateTopic').addEventListener('click', () => {
         const topicInput = document.getElementById('topicInput').value;
         const searchInput = document.getElementById('searchInput').value;
-        updateTopic(topicInput, searchInput);
+        const callTopic = ((newTopic) => {
+            setSerTopic(newTopic);
+           });
+        updateTopic(topicInput, searchInput, callTopic); // +++++
     });
     // search topic
     document.getElementById('searchTopic').addEventListener('click', async () => {
@@ -496,13 +499,12 @@ async function init() {
     // add new safety case
     addNewButton.addEventListener("click", async () => {
         const modifiedJSON = document.getElementById("mySavedModel").value;
-        addNewSC(modifiedJSON);
-        // window.alert('Please Change the topic');
-        // getLatstOne();
-        // setTimeout(y = await getLatstOne(),3000);
-        // Promise.resolve(y);
-        // console.log(`y : ${y}`)
-        // setLatstTopic(y);
+        await addNewSC(modifiedJSON);
+        promptMe((latestTopic) => {
+         setSerTopic(latestTopic);
+        });
+        updateDataButton.setAttribute("disabled", "true");
+        updateDataButton.style.visibility = "visible";
         document.getElementById("updateTopic").style.visibility = "hidden";
     });
     document.getElementById('topicInput').addEventListener('input', function () {
@@ -529,15 +531,10 @@ async function init() {
     myDiagram.addDiagramListener("LayoutCompleted", function (e) {
         myDiagram.nodes.each(function (node) {
             const parent = node.findTreeParentNode();
-            // if (node.data.linkDirection === "top") {
-            //     node.location = new go.Point(node.location.x, node.location.y +400); // Adjust the Y-coordinate as needed
-            // } else if (node.data.linkDirection === "bottom") {
-            //     node.location = new go.Point(node.location.x, node.location.y -400); // Adjust the Y-coordinate as needed
-            // } else 
             if (node.data.linkDirection === "left") {
-                node.location = new go.Point(parent.location.x - 400, parent.location.y - 30); // Adjust the X-coordinate as needed
+                node.location = new go.Point(parent.location.x - 600, parent.location.y - 30); // Adjust the X-coordinate as needed
             } else if (node.data.linkDirection === "right") {
-                node.location = new go.Point(parent.location.x + 400, parent.location.y); // Adjust the X-coordinate as needed
+                node.location = new go.Point(parent.location.x + 600, parent.location.y); // Adjust the X-coordinate as needed
             }
         });
     });
@@ -566,7 +563,7 @@ function setNodeShape(node) {
     const shape = node.findObject("SHAPE");
     const type = node.data.type;
     if (shape && type) {
-        if (/Subgoal.*/i.test(type) || /G.*/.test(type)) {
+        if (/Subgoal.*/i.test(type) || /G.*/.test(type) || /Sg.*/.test(type)) {
             shape.figure = "Rectangle";
             // shape.fill = "lightblue";
         } else if (/Solution.*/i.test(type) || /Sn.*/.test(type)) {
@@ -613,7 +610,7 @@ function save() {
     document.getElementById("mySavedModel").value = myDiagram.model.toJson();
     myDiagram.isModified = false;
 }
-function load(data) {
+function load(data, newData) {
     // myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
     if (data && data.data.nodeDataArray) {
         const modelData = data.data.nodeDataArray;
@@ -664,6 +661,7 @@ const searchTopic = async (searchInput) => {
         try {
             const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`);
             const data = await response.json();
+            console.log("data in search", data);
             const newTopic = data.data.topic;
             serTopic = newTopic
             load(data);
@@ -672,7 +670,8 @@ const searchTopic = async (searchInput) => {
             if (data) document.getElementById("topicEditor").style.visibility = "visible";
             return serTopic
         } catch (error) {
-            window.alert("No such safety case exist")
+            window.alert("No such safety case exist");
+            location.reload();
             console.error("Error searching for safety case:", error);
         }
 };
@@ -685,23 +684,23 @@ const getLatstOne = async () => {
         // console.log(`data: ${data.data[0].topic}`);
         const newTopic = data.data[0].topic;
         latestTopic = newTopic;
-        promptMe();
-        console.log(`newTopic: ${newTopic}`);
-        console.log(`latestTopic: ${latestTopic}`);
+        // promptMe();
+        // console.log(`newTopic: ${newTopic}`);
+        // console.log(`latestTopic: ${latestTopic}`);
         return latestTopic
     } catch (error) {
-        window.alert("No such safety case exist")
         console.error("Error searching for safety case:", error);
     }
 };
 
 // update from edit
-const updateDatabase = async (modifiedJSON, searchInput) => {
+const updateDatabase = async (modifiedJSON, searchInput, serTopic) => {
     const modifiedData = JSON.parse(modifiedJSON);
     delete modifiedData.class;
     const finalModifiedJson = JSON.stringify(modifiedData);
     console.log(`searchInput: ${searchInput}`);
     console.log(`PUT: ${finalModifiedJson}`);
+    if(searchInput)
     try {
         const response = await fetch(`http://localhost:5000/safetycases/topic/${searchInput}`, {
             method: 'PUT',
@@ -711,8 +710,27 @@ const updateDatabase = async (modifiedJSON, searchInput) => {
             body: finalModifiedJson,
         });
         if (response.ok) {
-            console.log('Data updated successfully.');
-            location.reload();
+            // console.log('Data updated successfully.');
+            window.alert('Data updated successfully.');
+            // location.reload();
+        } else {
+            console.error('Failed to update data.');
+        }
+    } catch (error) {
+        console.error('Error updating data:', error);
+    };
+    if(serTopic)
+    try {
+        const response = await fetch(`http://localhost:5000/safetycases/topic/${serTopic}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: finalModifiedJson,
+        });
+        if (response.ok) {
+            // console.log('Data updated successfully.');
+            // location.reload();
         } else {
             console.error('Failed to update data.');
         }
@@ -762,7 +780,7 @@ function downloadJson() {
 };
 
 // update topic
-async function updateTopic(newTopic, searchInput) {
+async function updateTopic(newTopic, searchInput, callback) {
     try {
         const res = await fetch(`http://localhost:5000/safetycases/topic/${newTopic}`);
         const topicData = await res.json();
@@ -779,43 +797,60 @@ async function updateTopic(newTopic, searchInput) {
             body: JSON.stringify(data),
         });
         if (response.ok) {
-            console.log('Topic updated successfully in the database.');
-            location.reload();
+            // console.log('Topic updated successfully in the database.');
+            window.alert('Topic updated successfully in the database.');
+            if (typeof callback === 'function') {
+                callback(newTopic);
+            };
+            // location.reload();
         } else {
             console.error('Failed to update the topic in the database.');
         };
         console.error('Error updating the topic in the database:', error);
     };
 };
+
 // update latest topic
-async function updateLatestTopic(firstNewTopic) {
+async function updateLatestTopic(firstNewTopic, callback) {
+    let existingTopic;
     try {
         const res = await fetch(`http://localhost:5000/safetycases/topic/${firstNewTopic}`);
         const topicData = await res.json();
-        const existingTopic = topicData.data.topic;
-        console.log(`existingTopic: ${existingTopic}`);
-        window.alert('This Topic is already exist please choose another');
-        location.reload();
+        existingTopic = topicData.data.topic;
+            console.log(`existingTopic: ${existingTopic}`);
+            window.alert('This Topic is already exist please choose another');
+            location.reload();
     } catch (error) {
-        const data = { newTopic: firstNewTopic };
-        const response = await fetch(`http://localhost:5000/safetycases/latest`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-        console.log('Topic updated successfully in the database.');
-        location.reload();
-        console.error('Error updating the topic in the database:', error);
-    };
+        if(!existingTopic){
+            const newData = { newTopic: firstNewTopic };
+            const response = await fetch(`http://localhost:5000/safetycases/latest`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newData),
+            });
+            if(response.ok){
+            console.log('Topic updated successfully in the database.');
+            if (typeof callback === 'function') {
+                callback(firstNewTopic);
+            };
+        }else {
+            location.reload();
+            console.error('Error updating the topic in the database:', error);
+        };
+        }
+    }
 };
 
+let firstNewTopic;
 // topicPrompt
-const promptMe = () => {
-    const firstNewTopic = window.prompt('Please Change the topic');
-    updateLatestTopic(firstNewTopic);
+const promptMe = (callback) => {
+    const firstNewTopic = window.prompt('Please change the topic');
+    // updateLatestTopic(firstNewTopic, searchTopic);
+    updateLatestTopic(firstNewTopic, callback);
     console.log(`firstNewTopic: ${firstNewTopic}`);
+    callback(firstNewTopic);
     // setLatstTopic(firstNewTopic);
     return firstNewTopic;
 };
