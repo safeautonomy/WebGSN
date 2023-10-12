@@ -1,7 +1,7 @@
 
 body{
     background-color: black;
-    font-family: 'VT323', monospace;
+    font-family: Helvetica, Sans-Serif;
     color:white;
 }
 
@@ -14,7 +14,7 @@ font-size: xx-large;
 /* height: 5%;     */
 background-color: black;
 color: white;
-font-family: 'VT323', monospace;
+font-family: Helvetica, Sans-Serif;
 margin: 20px;
 }
 
@@ -43,7 +43,7 @@ P{
 button{
     background-color: black;
     border: 2px solid white;
-    font-family: 'VT323', monospace;
+    font-family: Helvetica, Sans-Serif;
     color: white;
     margin: 10px;
 }
@@ -60,18 +60,6 @@ button[disabled]{
   background-color: #cccccc;
   color: white;
 }
-
-h2{
-    margin: 10px;
-    font-weight: 200;
-    animation: blinker 2s linear infinite;
-}
-
-@keyframes blinker {
-    50% {
-      opacity: 0;
-    }
-  }
 
 ol>li{
     font-size:large;
